@@ -247,14 +247,18 @@ Offers can be automatically generated when candidates reach offer stages:
 
 **Configuration in Pipeline Stage:**
 - Offer template selected
-- Offer mode set to "automatic"
+- Offer mode set to `auto_draft` or `auto_send`
 - Expiry days configured
+
+**Offer Modes:**
+- **`auto_draft`**: Creates an offer draft for manual review before sending
+- **`auto_send`**: Automatically creates and sends the offer to the candidate
 
 **When candidate moves to stage:**
 1. Offer draft created with job salary info
 2. Start date calculated (e.g., 2 weeks from today)
 3. Expiry date set (e.g., 7 days from today)
-4. Offer automatically sent to candidate
+4. If `auto_send` mode: Offer automatically sent to candidate
 
 <Warning>
   Use automatic sending cautiously. For senior roles or complex negotiations, manual review is recommended.

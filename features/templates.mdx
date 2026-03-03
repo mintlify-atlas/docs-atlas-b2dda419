@@ -21,7 +21,7 @@ Every template requires:
     Not visible to candidates
   </Card>
   <Card title="Type" icon="shapes">
-    Template category: Email or Offer Letter
+    Template category: offer, rejection, assessment_invite, or general
     
     Determines where template is used
   </Card>
@@ -43,22 +43,11 @@ Every template requires:
 
 ## Template Types
 
-### Email Templates
+OpenATS supports four distinct template types, each serving a specific purpose in the recruitment workflow:
 
-Used for candidate communications throughout the hiring process:
+### Offer Templates (`offer`)
 
-**Common Email Templates:**
-- Application received confirmation
-- Interview invitation
-- Interview reminder
-- Assessment invitation
-- Rejection notification
-- Reference request
-- Onboarding welcome
-
-### Offer Letter Templates
-
-Used for generating formal job offers:
+Used for generating formal job offer letters:
 
 **Offer Template Elements:**
 - Company letterhead
@@ -67,6 +56,37 @@ Used for generating formal job offers:
 - Benefits overview
 - Start date and next steps
 - Acceptance instructions
+
+### Rejection Templates (`rejection`)
+
+Used for candidate rejection notifications:
+
+**Rejection Template Elements:**
+- Polite rejection message
+- Feedback (optional)
+- Thank you for applying
+- Encouragement to apply for future roles
+
+### Assessment Invite Templates (`assessment_invite`)
+
+Used to invite candidates to take technical assessments:
+
+**Assessment Invite Elements:**
+- Assessment link with unique token
+- Time limit information
+- Instructions and expectations
+- Expiry date
+
+### General Templates (`general`)
+
+Used for any other candidate communications:
+
+**Common General Templates:**
+- Application received confirmation
+- Interview invitation
+- Interview reminder
+- Reference request
+- Onboarding welcome
 
 <Tip>
   Create separate offer templates for different roles (executive, engineering, sales) or employment types (full-time, contract, intern) to include role-specific details.
