@@ -1,0 +1,199 @@
+---
+title: Job Management
+description: Create, configure, and manage job postings in OpenATS
+icon: briefcase
+---
+
+## Overview
+
+Job Management is the foundation of your hiring workflow in OpenATS. Create detailed job postings with comprehensive descriptions, salary information, and required skills to attract the right candidates.
+
+<Note>
+  Jobs can exist in multiple states: **draft**, **published**, **inactive**, **closed**, or **archived**. Only published jobs are visible to candidates.
+</Note>
+
+## Creating a Job Posting
+
+### Basic Information
+
+Every job posting requires the following core details:
+
+<CardGroup cols={2}>
+  <Card title="Job Title" icon="heading">
+    The position name that candidates will see (e.g., "Senior Full-Stack Engineer")
+  </Card>
+  <Card title="Department" icon="building">
+    Associate the job with a specific department in your organization
+  </Card>
+  <Card title="Employment Type" icon="clock">
+    Choose from: Full-time, Part-time, Contract, Internship, or Freelance
+  </Card>
+  <Card title="Location" icon="location-dot">
+    Specify the job location or indicate if it's remote
+  </Card>
+</CardGroup>
+
+### Job Description
+
+Craft a compelling job description that includes:
+
+- Role overview and key responsibilities
+- Required qualifications and experience
+- Company culture and benefits
+- Growth opportunities
+
+<Tip>
+  Use formatting to make your job description scannable. Candidates appreciate bullet points and clear section headers.
+</Tip>
+
+### Skills & Requirements
+
+Add relevant skills to help:
+- Filter and match candidates automatically
+- Power CV analysis and scoring
+- Appear in candidate searches
+
+Simply enter skills one at a time (e.g., "React", "TypeScript", "PostgreSQL").
+
+## Compensation Configuration
+
+OpenATS supports flexible salary configurations to match your compensation strategy:
+
+### Fixed Salary
+
+Specify an exact compensation amount:
+
+<Steps>
+  <Step title="Select 'Fixed' salary type">
+    Choose this when you have a specific salary in mind
+  </Step>
+  <Step title="Set currency">
+    Use ISO 4217 currency codes (USD, EUR, GBP, etc.)
+  </Step>
+  <Step title="Choose pay frequency">
+    Select: Hourly, Daily, Weekly, Monthly, or Yearly
+  </Step>
+  <Step title="Enter salary amount">
+    Input the exact compensation figure
+  </Step>
+</Steps>
+
+### Salary Range
+
+Provide a minimum and maximum salary band:
+
+<Steps>
+  <Step title="Select 'Range' salary type">
+    Use this for flexible compensation discussions
+  </Step>
+  <Step title="Set currency and frequency">
+    Same as fixed salary configuration
+  </Step>
+  <Step title="Define min and max">
+    Enter both values (max must be greater than min)
+  </Step>
+</Steps>
+
+<Note>
+  Salary information can be displayed on the public job posting or kept internal for recruiter reference only.
+</Note>
+
+## Job Status Lifecycle
+
+### Draft
+
+Jobs start in draft mode, allowing you to:
+- Build out the complete job description
+- Configure pipeline stages
+- Add custom application questions
+- Review with stakeholders
+
+### Published
+
+When ready, publish the job to:
+- Make it visible on your careers page
+- Accept candidate applications
+- Begin receiving submissions
+
+<Warning>
+  Publishing a job activates its unique slug URL. Ensure all details are correct before publishing.
+</Warning>
+
+### Managing Active Jobs
+
+<Tabs>
+  <Tab title="Pause Applications">
+    Set status to **Inactive** to temporarily stop accepting new applications while keeping the job listing visible.
+  </Tab>
+  <Tab title="Close Position">
+    Mark as **Closed** when the role is filled. Existing candidates remain in the pipeline.
+  </Tab>
+  <Tab title="Archive">
+    Move old jobs to **Archived** status for record-keeping without cluttering your active jobs list.
+  </Tab>
+</Tabs>
+
+## Accessing Jobs
+
+### By ID
+Every job has a unique numeric identifier used internally in the system.
+
+### By Slug
+Jobs also have a URL-friendly slug (e.g., `senior-full-stack-engineer-2024`) that:
+- Appears in the public job posting URL
+- Makes links more readable and shareable
+- Is automatically generated from the job title
+
+<CodeGroup>
+```bash Example Job URL
+https://jobs.yourcompany.com/careers/senior-full-stack-engineer-2024
+```
+</CodeGroup>
+
+## Deletion & Restrictions
+
+<Warning>
+  You cannot delete a job that has candidates. Instead, close or archive it to preserve the candidate history and maintain data integrity.
+</Warning>
+
+This restriction ensures:
+- Candidate data is never orphaned
+- Historical records remain intact
+- Compliance requirements are met
+
+## Best Practices
+
+<AccordionGroup>
+  <Accordion title="Write clear, inclusive job descriptions">
+    Use gender-neutral language and focus on actual requirements rather than "nice-to-haves" that may discourage qualified candidates.
+  </Accordion>
+  
+  <Accordion title="Keep skills lists focused">
+    Add 5-10 core skills rather than an exhaustive list. This improves CV matching accuracy.
+  </Accordion>
+  
+  <Accordion title="Update status promptly">
+    Close or pause jobs as soon as the position is filled to avoid collecting applications you won't review.
+  </Accordion>
+  
+  <Accordion title="Use departments consistently">
+    Proper department categorization helps with reporting and hiring team assignments.
+  </Accordion>
+</AccordionGroup>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Configure Pipeline Stages" icon="diagram-project" href="/features/pipeline-stages">
+    Set up your hiring workflow stages
+  </Card>
+  <Card title="Add Custom Questions" icon="clipboard-question" href="/features/assessments">
+    Create application screening questions
+  </Card>
+  <Card title="Build Hiring Teams" icon="users" href="/features/pipeline-stages">
+    Assign team members to jobs
+  </Card>
+  <Card title="Start Tracking Candidates" icon="user-check" href="/features/candidate-tracking">
+    Begin accepting applications
+  </Card>
+</CardGroup>

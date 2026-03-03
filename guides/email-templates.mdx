@@ -1,0 +1,683 @@
+---
+title: Creating Email Templates
+description: Create and customize email templates for automated candidate communications
+---
+
+This guide shows you how to create, customize, and manage email templates for different stages of your hiring process.
+
+## Overview
+
+Email templates in OpenATS allow you to:
+- Automate candidate communications
+- Maintain consistent messaging across your team
+- Personalize emails with dynamic variables
+- Save time on repetitive email tasks
+
+## Template Types
+
+OpenATS supports four template types:
+
+<CardGroup cols={2}>
+  <Card title="Offer Letter" icon="envelope-open-text" color="#10b981">
+    Send job offers with salary, start date, and offer details
+  </Card>
+  <Card title="Rejection" icon="xmark" color="#ef4444">
+    Notify candidates who weren't selected professionally
+  </Card>
+  <Card title="Assessment Invite" icon="clipboard-check" color="#3b82f6">
+    Send quiz or assessment invitations with deadlines
+  </Card>
+  <Card title="General" icon="envelope" color="#64748b">
+    Any other candidate communication
+  </Card>
+</CardGroup>
+
+Each template type has specific variables available for personalization.
+
+## Creating a New Template
+
+<Steps>
+  <Step title="Navigate to Templates">
+    1. Go to **Settings** in the sidebar
+    2. Click **Templates**
+    3. Click **+ New Template** in the top right
+  </Step>
+
+  <Step title="Select Template Type">
+    Choose the template type from the dialog:
+    - **Offer Letter** - For sending job offers
+    - **Rejection** - For candidate rejections
+    - **Assessment Invite** - For assessment invitations
+    - **General** - For other communications
+
+    <Tip>
+    The template type determines which variables are available. Choose the most specific type for your use case.
+    </Tip>
+  </Step>
+
+  <Step title="Enter Template Name">
+    Give your template a descriptive name:
+
+    ```text
+    Examples:
+    - "Software Engineer Offer - Standard"
+    - "Rejection - Post Interview"
+    - "Assessment Invite - Technical Test"
+    - "Follow-up - Missing Documents"
+    ```
+
+    <Note>
+    Template names are internal only and not visible to candidates.
+    </Note>
+  </Step>
+
+  <Step title="Write Email Subject">
+    Create a subject line that can include variables:
+
+    ```text
+    Examples:
+    - "Offer Letter - {{jobTitle}} at {{companyName}}"
+    - "Update on your application for {{jobTitle}}"
+    - "Technical Assessment - {{candidateName}}"
+    ```
+
+    Subject line is required and can be up to 500 characters.
+  </Step>
+
+  <Step title="Design Email Body">
+    Use the visual email builder to create your template:
+
+    **Available Content Blocks:**
+    - **Heading** - Section headers
+    - **Text** - Paragraphs of content
+    - **Button** - Call-to-action links
+    - **Image** - Logo or graphics
+    - **Divider** - Visual separators
+    - **Spacer** - Add vertical spacing
+
+    Drag and drop blocks to build your email layout.
+  </Step>
+
+  <Step title="Add Dynamic Variables">
+    Insert variables to personalize emails:
+
+    **Common Variables (all templates):**
+    - `{{candidateName}}` - Candidate's full name
+    - `{{candidateFirstName}}` - First name only
+    - `{{jobTitle}}` - Position title
+    - `{{companyName}}` - Your company name
+    - `{{hiringManager}}` - Hiring manager's name
+
+    **Offer Letter Variables:**
+    - `{{salary}}` - Salary amount
+    - `{{startDate}}` - Proposed start date
+    - `{{offerExpiryDate}}` - When offer expires
+
+    **Assessment Variables:**
+    - `{{assessmentLink}}` - Link to take assessment
+    - `{{assessmentDeadline}}` - Completion deadline
+
+    <Tip>
+    Variables are automatically replaced with actual values when the email is sent.
+    </Tip>
+  </Step>
+
+  <Step title="Preview Template">
+    Click **Preview** to see how your email looks with sample data.
+
+    Check:
+    - Variables render correctly
+    - Formatting displays as expected
+    - Links work properly
+    - Mobile responsiveness
+  </Step>
+
+  <Step title="Save Template">
+    Click **Save Template** to add it to your library.
+  </Step>
+</Steps>
+
+## Template Builder Blocks
+
+### Heading Block
+
+Add section headings:
+```json
+{
+  "type": "heading",
+  "content": "Offer Letter - {{jobTitle}}"
+}
+```
+
+### Text Block
+
+Add paragraphs:
+```json
+{
+  "type": "text",
+  "content": "Dear {{candidateName}}, We are pleased to offer you the position of {{jobTitle}}..."
+}
+```
+
+### Button Block
+
+Add clickable call-to-action buttons:
+```json
+{
+  "type": "button",
+  "label": "Accept Offer",
+  "url": "{{offerAcceptanceLink}}"
+}
+```
+
+### Image Block
+
+Add images (logo, header graphics):
+```json
+{
+  "type": "image",
+  "url": "https://yourcompany.com/logo.png",
+  "alt": "Company Logo"
+}
+```
+
+### Divider Block
+
+Add horizontal lines:
+```json
+{
+  "type": "divider"
+}
+```
+
+### Spacer Block  
+
+Add vertical spacing:
+```json
+{
+  "type": "spacer",
+  "height": 24  // pixels
+}
+```
+
+## Example Templates
+
+<AccordionGroup>
+  <Accordion title="Offer Letter Template">
+    **Subject:** Offer Letter - {{jobTitle}} at {{companyName}}
+
+    **Body:**
+    ```
+    [Heading] Congratulations, {{candidateFirstName}}!
+
+    [Text] We are delighted to offer you the position of {{jobTitle}} 
+    at {{companyName}}.
+
+    [Divider]
+
+    [Heading] Offer Details
+
+    [Text]
+    Position: {{jobTitle}}
+    Department: {{department}}
+    Start Date: {{startDate}}
+    Salary: {{salary}} {{currency}} per {{payFrequency}}
+    Location: {{location}}
+
+    [Text] This offer is valid until {{offerExpiryDate}}.
+
+    [Button] Accept Offer → {{offerAcceptanceLink}}
+
+    [Spacer - 24px]
+
+    [Text] We look forward to welcoming you to the team!
+
+    [Text]
+    Best regards,
+    {{hiringManager}}
+    {{companyName}}
+    ```
+  </Accordion>
+
+  <Accordion title="Rejection Template (Post-Interview)">
+    **Subject:** Update on your {{jobTitle}} application
+
+    **Body:**
+    ```
+    [Heading] Thank you for your interest
+
+    [Text] Dear {{candidateName}},
+
+    [Text] Thank you for taking the time to interview for the 
+    {{jobTitle}} position at {{companyName}}. We appreciate your 
+    interest in joining our team.
+
+    [Text] After careful consideration, we have decided to move 
+    forward with other candidates whose experience more closely 
+    aligns with our current needs.
+
+    [Text] We were impressed by your skills and encourage you to 
+    apply for future openings that match your qualifications.
+
+    [Text] We wish you the best of luck in your job search.
+
+    [Text]
+    Best regards,
+    {{hiringManager}}
+    {{companyName}}
+    ```
+  </Accordion>
+
+  <Accordion title="Assessment Invite Template">
+    **Subject:** Technical Assessment - {{jobTitle}} Position
+
+    **Body:**
+    ```
+    [Heading] Next Step: Technical Assessment
+
+    [Text] Hi {{candidateFirstName}},
+
+    [Text] Thank you for your application for {{jobTitle}} at 
+    {{companyName}}. We'd like to invite you to complete a technical 
+    assessment as the next step in our hiring process.
+
+    [Divider]
+
+    [Heading] Assessment Details
+
+    [Text]
+    - Time Limit: 60 minutes
+    - Questions: Mix of multiple choice and coding challenges
+    - Deadline: {{assessmentDeadline}}
+
+    [Text] Please complete the assessment by clicking the button below:
+
+    [Button] Start Assessment → {{assessmentLink}}
+
+    [Spacer - 24px]
+
+    [Text] Tips for success:
+    • Find a quiet environment
+    • Ensure stable internet connection
+    • Have your preferred IDE ready (if applicable)
+
+    [Text] If you have any questions, reply to this email.
+
+    [Text]
+    Good luck!
+    {{hiringManager}}
+    ```
+  </Accordion>
+
+  <Accordion title="Application Received (General)">
+    **Subject:** Application Received - {{jobTitle}}
+
+    **Body:**
+    ```
+    [Image] {{companyLogo}}
+
+    [Heading] We received your application!
+
+    [Text] Hi {{candidateFirstName}},
+
+    [Text] Thank you for applying for the {{jobTitle}} position at 
+    {{companyName}}. We've successfully received your application.
+
+    [Text] Our hiring team will review your application and reach out 
+    within 5-7 business days if your qualifications match our needs.
+
+    [Divider]
+
+    [Heading] What happens next?
+
+    [Text]
+    1. Application Review (3-5 days)
+    2. Phone Screen (if selected)
+    3. Technical Interview
+    4. Final Interview
+    5. Offer
+
+    [Text] In the meantime, feel free to explore our company:
+
+    [Button] Visit Our Blog → {{companyBlog}}
+
+    [Spacer - 24px]
+
+    [Text]
+    Best regards,
+    The {{companyName}} Team
+    ```
+  </Accordion>
+</AccordionGroup>
+
+## Managing Templates
+
+### Editing Templates
+
+1. Go to **Settings → Templates**
+2. Click on the template name or the **edit** icon
+3. Make your changes
+4. Click **Save Changes**
+
+<Warning>
+Changes to templates affect future emails only. Previously sent emails are not updated.
+</Warning>
+
+### Duplicating Templates
+
+Create variations of existing templates:
+
+1. Find the template in the list
+2. Click the **⋮** menu icon
+3. Select **Duplicate**
+4. A copy is created with " (Copy)" appended to the name
+5. Edit the duplicate as needed
+
+<Tip>
+Duplicate templates to create role-specific or department-specific versions of standard emails.
+</Tip>
+
+### Deleting Templates
+
+1. Click the **⋮** menu icon on a template
+2. Select **Delete**
+3. Confirm deletion
+
+<Warning>
+Deleted templates cannot be recovered. Jobs using deleted templates will need new templates assigned.
+</Warning>
+
+## Using Templates in Jobs
+
+### Assign Template to Pipeline Stage
+
+Automate emails when candidates move to specific stages:
+
+<Steps>
+  <Step title="Configure Job Pipeline">
+    1. Go to a job
+    2. Click **Hiring Process** tab
+    3. Click the **settings** icon on a stage
+  </Step>
+
+  <Step title="Choose Template">
+    For **Offer** stages:
+    - Select **Offer Template** from dropdown
+    - Choose **Mode**: Auto-Draft or Auto-Send
+    - Set **Expiry Days**
+
+    For **Rejection** stages:
+    - Select **Rejection Email Template** from dropdown
+    - Emails send automatically when candidates move here
+  </Step>
+
+  <Step title="Save Configuration">
+    Click **Save** to activate the automation.
+  </Step>
+</Steps>
+
+### Manual Email Sending
+
+Send template-based emails manually:
+
+1. Open a candidate profile
+2. Click **Messages** tab
+3. Click **Send Email**
+4. Select a template from dropdown
+5. Preview and customize if needed
+6. Click **Send**
+
+## Available Variables by Template Type
+
+### All Templates
+
+| Variable | Description | Example |
+|----------|-------------|----------|
+| `{{candidateName}}` | Full name | "John Smith" |
+| `{{candidateFirstName}}` | First name | "John" |
+| `{{candidateEmail}}` | Email address | "john@example.com" |
+| `{{jobTitle}}` | Position title | "Senior Software Engineer" |
+| `{{companyName}}` | Company name | "Acme Corp" |
+| `{{hiringManager}}` | Manager name | "Jane Doe" |
+| `{{department}}` | Department | "Engineering" |
+| `{{location}}` | Job location | "San Francisco, CA" |
+
+### Offer Letter Templates
+
+| Variable | Description | Example |
+|----------|-------------|----------|
+| `{{salary}}` | Salary amount | "120,000" |
+| `{{currency}}` | Currency code | "USD" |
+| `{{payFrequency}}` | Pay frequency | "yearly" |
+| `{{startDate}}` | Start date | "2024-02-01" |
+| `{{offerExpiryDate}}` | Expiration | "2024-01-20" |
+| `{{offerAcceptanceLink}}` | Accept link | "https://..." |
+
+### Assessment Invite Templates
+
+| Variable | Description | Example |
+|----------|-------------|----------|
+| `{{assessmentLink}}` | Assessment URL | "https://..." |
+| `{{assessmentDeadline}}` | Due date | "2024-01-15" |
+| `{{assessmentDuration}}` | Time limit | "60 minutes" |
+
+## Best Practices
+
+<AccordionGroup>
+  <Accordion title="Personalize, Don't Automate Everything">
+    Use templates as starting points, not rigid scripts:
+
+    ✅ **Good approach:**
+    - Template provides structure and key details
+    - Hiring manager adds personal note
+    - Mentions specific conversation points
+
+    ❌ **Poor approach:**
+    - Generic template sent as-is
+    - No personalization
+    - Feels robotic and impersonal
+
+    **Example:**
+    ```text
+    [Template content]...
+
+    [Personal addition]
+    I really enjoyed our conversation about your work on the 
+    API gateway project. Your experience would be a great fit 
+    for our team's current challenges.
+    ```
+  </Accordion>
+
+  <Accordion title="Test Templates Before Using">
+    Before activating templates:
+
+    1. **Preview with real data** - Use actual candidate names and job details
+    2. **Send test emails** - Send to yourself or team members
+    3. **Check on mobile** - Most candidates read on phones
+    4. **Verify links** - Ensure all buttons and links work
+    5. **Test variables** - Confirm all variables populate correctly
+  </Accordion>
+
+  <Accordion title="Keep Rejection Emails Professional">
+    Rejection emails represent your employer brand:
+
+    **Do:**
+    - Thank them for their time
+    - Be respectful and professional
+    - Encourage future applications
+    - Provide brief, constructive feedback (when appropriate)
+
+    **Don't:**
+    - Be overly generic ("we had strong candidates")
+    - Ghost candidates (always send rejection)
+    - Give false hope ("we'll keep you in mind")
+    - Provide excessive detail about decision
+
+    **Example:**
+    ```text
+    While your background is impressive, we've decided to move 
+    forward with a candidate who has more hands-on experience 
+    with Kubernetes, which is central to this role. We encourage 
+    you to apply for future DevOps positions as your skills grow.
+    ```
+  </Accordion>
+
+  <Accordion title="Maintain Consistent Branding">
+    Keep templates on-brand:
+
+    - Use company logo in header
+    - Match company color scheme
+    - Use consistent tone and voice
+    - Include standard footer with contact info
+    - Add social media links
+
+    **Standard Footer:**
+    ```text
+    [Divider]
+
+    [Image] {{companyLogo}}
+
+    [Text]
+    {{companyName}}
+    {{companyAddress}}
+    {{companyPhone}} | {{companyEmail}}
+
+    [Social Media Icons]
+    LinkedIn | Twitter | Facebook
+    ```
+  </Accordion>
+</AccordionGroup>
+
+## Creating Templates via API
+
+### Create Template
+
+```javascript
+POST /api/templates
+
+Body:
+{
+  "name": "Software Engineer Offer",
+  "type": "offer",
+  "subject": "Offer Letter - {{jobTitle}} at {{companyName}}",
+  "bodyJson": [
+    {
+      "type": "heading",
+      "content": "Congratulations!"
+    },
+    {
+      "type": "text",
+      "content": "We are pleased to offer you the position of {{jobTitle}}."
+    },
+    {
+      "type": "button",
+      "label": "Accept Offer",
+      "url": "{{offerAcceptanceLink}}"
+    }
+  ],
+  "createdBy": 1
+}
+```
+
+### Update Template
+
+```javascript
+PUT /api/templates/{id}
+
+Body:
+{
+  "subject": "Updated subject line",
+  "bodyJson": [/* updated blocks */]
+}
+```
+
+### Preview Template
+
+Generate preview with sample data:
+
+```javascript
+POST /api/templates/{id}/preview
+
+Body:
+{
+  "candidateName": "John Smith",
+  "jobTitle": "Senior Software Engineer",
+  "salary": 120000,
+  "startDate": "2024-02-01"
+}
+```
+
+## Template Schema
+
+```typescript
+interface Template {
+  id: number;
+  name: string;                    // Max 255 chars
+  type: 'offer' | 'rejection' | 'assessment_invite' | 'general';
+  subject: string;                 // Max 500 chars
+  bodyJson: ContentBlock[];        // Array of content blocks
+  createdBy: number;              // User ID
+  createdAt: string;              // ISO 8601 timestamp
+  updatedAt: string;              // ISO 8601 timestamp
+}
+
+interface ContentBlock {
+  type: 'heading' | 'text' | 'button' | 'image' | 'divider' | 'spacer';
+  content?: string;               // For heading, text
+  label?: string;                 // For button
+  url?: string;                   // For button, image
+  alt?: string;                   // For image
+  height?: number;                // For spacer (pixels)
+}
+```
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="Variables Not Replacing">
+    Common issues:
+    - Typo in variable name (case-sensitive)
+    - Variable not available for template type
+    - Missing data in candidate or job record
+
+    **Fix:** Check variable spelling matches exactly:
+    - ✅ `{{candidateName}}`
+    - ❌ `{{CandidateName}}` (wrong capitalization)
+    - ❌ `{{candidate_name}}` (wrong format)
+  </Accordion>
+
+  <Accordion title="Template Not Sending">
+    Verify:
+    - Template is assigned to pipeline stage
+    - Stage automation is enabled (not draft)
+    - Email service is configured (Settings → Integrations)
+    - Candidate has valid email address
+    - Check email delivery logs (Settings → Logs)
+  </Accordion>
+
+  <Accordion title="Formatting Issues">
+    If emails look broken:
+    - Test in multiple email clients (Gmail, Outlook, Apple Mail)
+    - Keep layouts simple (complex HTML may not render)
+    - Use web-safe fonts
+    - Test on mobile devices
+    - Avoid large images (max 500KB)
+  </Accordion>
+</AccordionGroup>
+
+## Related Guides
+
+<CardGroup cols={2}>
+  <Card title="Creating Jobs" icon="briefcase" href="/guides/creating-jobs">
+    Configure email automations in hiring pipelines
+  </Card>
+  <Card title="Managing Candidates" icon="users" href="/guides/managing-candidates">
+    Send template-based emails to candidates
+  </Card>
+  <Card title="Template Features" icon="palette" href="/features/templates">
+    Learn about the template system
+  </Card>
+  <Card title="Template API" icon="code" href="/api/templates">
+    Programmatic template management
+  </Card>
+</CardGroup>

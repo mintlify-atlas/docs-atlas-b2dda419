@@ -1,0 +1,354 @@
+---
+title: 'Company'
+description: 'Global company profile, branding, and department structure'
+---
+
+## Get Company Profile
+
+<CodeGroup>
+```http
+GET /company
+```
+</CodeGroup>
+
+Retrieve the global company details including name, logo, and website.
+
+### Response
+
+<ResponseField name="data" type="object">
+  Company profile object
+  
+  <Expandable title="properties">
+    <ResponseField name="id" type="integer">
+      Unique company identifier
+    </ResponseField>
+    
+    <ResponseField name="name" type="string">
+      Company name
+    </ResponseField>
+    
+    <ResponseField name="email" type="string">
+      Company contact email
+    </ResponseField>
+    
+    <ResponseField name="website" type="string" optional>
+      Company website URL
+    </ResponseField>
+    
+    <ResponseField name="phone" type="string" optional>
+      Company phone number
+    </ResponseField>
+    
+    <ResponseField name="address" type="string" optional>
+      Company physical address
+    </ResponseField>
+    
+    <ResponseField name="description" type="string" optional>
+      Company description
+    </ResponseField>
+    
+    <ResponseField name="logoUrl" type="string" optional>
+      URL to company logo
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+### Example Request
+
+```bash
+curl -X GET http://localhost:8080/api/company
+```
+
+### Example Response
+
+```json
+{
+  "data": {
+    "id": 1,
+    "name": "Acme Corp",
+    "website": "https://acme.com",
+    "logoUrl": "https://r2.openats.com/logos/acme.png"
+  }
+}
+```
+
+### Error Codes
+
+<ResponseField name="500" type="error">
+  Failed to fetch company
+</ResponseField>
+
+---
+
+## Update Company Profile
+
+<CodeGroup>
+```http
+PUT /company
+```
+</CodeGroup>
+
+Update or create the company information (upsert operation).
+
+### Request Body
+
+<ParamField body="name" type="string" required>
+  Company name (1-255 characters)
+</ParamField>
+
+<ParamField body="email" type="string" required>
+  Valid company email address
+</ParamField>
+
+<ParamField body="website" type="string" optional>
+  Valid URL for company website (max 500 characters)
+</ParamField>
+
+<ParamField body="phone" type="string" optional>
+  Company phone number (max 50 characters)
+</ParamField>
+
+<ParamField body="address" type="string" optional>
+  Company physical address
+</ParamField>
+
+<ParamField body="description" type="string" optional>
+  Company description
+</ParamField>
+
+<ParamField body="logoUrl" type="string" optional>
+  Valid URL to company logo (max 1000 characters)
+</ParamField>
+
+### Response
+
+<ResponseField name="data" type="object">
+  Updated company profile object
+</ResponseField>
+
+### Example Request
+
+```bash
+curl -X PUT http://localhost:8080/api/company \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Acme Corp",
+    "email": "contact@acme.com",
+    "website": "https://acme.com",
+    "logoUrl": "https://r2.openats.com/logos/acme.png"
+  }'
+```
+
+### Error Codes
+
+<ResponseField name="400" type="error">
+  Validation failed - Invalid input data
+</ResponseField>
+
+<ResponseField name="500" type="error">
+  Failed to upsert company
+</ResponseField>
+
+---
+
+## List All Departments
+
+<CodeGroup>
+```http
+GET /company/departments
+```
+</CodeGroup>
+
+Returns a list of all company departments (e.g. Engineering, Sales).
+
+### Response
+
+<ResponseField name="data" type="array">
+  Array of department objects
+  
+  <Expandable title="department properties">
+    <ResponseField name="id" type="integer">
+      Department identifier
+    </ResponseField>
+    
+    <ResponseField name="name" type="string">
+      Department name
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+### Example Request
+
+```bash
+curl -X GET http://localhost:8080/api/company/departments
+```
+
+### Error Codes
+
+<ResponseField name="500" type="error">
+  Failed to fetch departments
+</ResponseField>
+
+---
+
+## Create Department
+
+<CodeGroup>
+```http
+POST /company/departments
+```
+</CodeGroup>
+
+Create a new department within the company.
+
+### Request Body
+
+<ParamField body="name" type="string" required>
+  Department name (1-255 characters)
+</ParamField>
+
+### Response
+
+<ResponseField name="data" type="object">
+  Created department object
+  
+  <Expandable title="properties">
+    <ResponseField name="id" type="integer">
+      Department identifier
+    </ResponseField>
+    
+    <ResponseField name="name" type="string">
+      Department name
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+### Example Request
+
+```bash
+curl -X POST http://localhost:8080/api/company/departments \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Engineering"
+  }'
+```
+
+### Error Codes
+
+<ResponseField name="400" type="error">
+  Validation failed OR Company must be set up before creating departments
+</ResponseField>
+
+<ResponseField name="409" type="error">
+  Department name already exists
+</ResponseField>
+
+<ResponseField name="500" type="error">
+  Failed to create department
+</ResponseField>
+
+---
+
+## Update Department
+
+<CodeGroup>
+```http
+PUT /company/departments/{id}
+```
+</CodeGroup>
+
+Update an existing department's information.
+
+### Path Parameters
+
+<ParamField path="id" type="integer" required>
+  Department ID
+</ParamField>
+
+### Request Body
+
+<ParamField body="name" type="string" required>
+  Updated department name (1-255 characters)
+</ParamField>
+
+### Response
+
+<ResponseField name="data" type="object">
+  Updated department object
+</ResponseField>
+
+### Example Request
+
+```bash
+curl -X PUT http://localhost:8080/api/company/departments/1 \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Software Engineering"
+  }'
+```
+
+### Error Codes
+
+<ResponseField name="400" type="error">
+  Invalid department ID OR Validation failed
+</ResponseField>
+
+<ResponseField name="404" type="error">
+  Department not found
+</ResponseField>
+
+<ResponseField name="409" type="error">
+  Department name already exists
+</ResponseField>
+
+<ResponseField name="500" type="error">
+  Failed to update department
+</ResponseField>
+
+---
+
+## Delete Department
+
+<CodeGroup>
+```http
+DELETE /company/departments/{id}
+```
+</CodeGroup>
+
+Permanently delete a department from the system.
+
+### Path Parameters
+
+<ParamField path="id" type="integer" required>
+  Department ID to delete
+</ParamField>
+
+### Response
+
+<ResponseField name="data" type="object">
+  Deleted department object
+</ResponseField>
+
+### Example Request
+
+```bash
+curl -X DELETE http://localhost:8080/api/company/departments/1
+```
+
+### Error Codes
+
+<ResponseField name="400" type="error">
+  Invalid department ID
+</ResponseField>
+
+<ResponseField name="404" type="error">
+  Department not found
+</ResponseField>
+
+<ResponseField name="409" type="error">
+  Cannot delete department that has jobs assigned to it
+</ResponseField>
+
+<ResponseField name="500" type="error">
+  Failed to delete department
+</ResponseField>

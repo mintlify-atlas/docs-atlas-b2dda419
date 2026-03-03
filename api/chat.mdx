@@ -1,0 +1,316 @@
+---
+title: Chat
+description: Real-time collaboration endpoints for team messaging on jobs and candidates
+---
+
+## Overview
+
+The Chat API provides real-time internal team collaboration features. Team members can discuss job openings and specific candidates, with support for both user messages and system-generated activity notifications.
+
+**Chat Types:**
+- **Job Chat** - Team discussions about a specific job opening
+- **Candidate Chat** - Internal notes and discussions about a specific candidate
+
+**Message Types:**
+- **User Messages** - Messages sent by team members
+- **System Messages** - Automated activity notifications (e.g., "Jane moved candidate to Interview stage")
+
+---
+
+## Get Job Chat History
+
+Retrieve all messages and activity for a specific job opening.
+
+```bash GET /chat/job/:jobId
+curl -X GET http://localhost:8080/api/chat/job/5 \
+  -H "Content-Type: application/json"
+```
+
+**Path Parameters:**
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `jobId` | integer | Yes | Job opening ID |
+
+**Response:**
+
+```json
+{
+  "data": [
+    {
+      "id": 45,
+      "message": "We need to schedule interviews for the top 3 candidates this week.",
+      "senderId": 2,
+      "senderName": "Sarah",
+      "senderAvatar": "https://r2.openats.com/avatars/sarah.jpg",
+      "sentAt": "2024-03-16T10:30:00Z",
+      "isSystemMessage": false
+    },
+    {
+      "id": 44,
+      "message": "Job posting has been published and is now live on the careers page.",
+      "senderId": null,
+      "senderName": null,
+      "senderAvatar": null,
+      "sentAt": "2024-03-15T14:20:00Z",
+      "isSystemMessage": true
+    },
+    {
+      "id": 43,
+      "message": "Let's increase the salary range to attract more senior candidates.",
+      "senderId": 1,
+      "senderName": "John",
+      "senderAvatar": "https://r2.openats.com/avatars/john.jpg",
+      "sentAt": "2024-03-15T09:15:00Z",
+      "isSystemMessage": false
+    }
+  ]
+}
+```
+
+**Response Fields:**
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `id` | integer | Message ID |
+| `message` | string | Message content or system notification text |
+| `senderId` | integer/null | User ID of sender (null for system messages) |
+| `senderName` | string/null | First name of sender (null for system messages) |
+| `senderAvatar` | string/null | Avatar URL of sender (null for system messages) |
+| `sentAt` | string | Timestamp when message was sent (ISO 8601) |
+| `isSystemMessage` | boolean | Whether this is a system-generated notification |
+
+---
+
+## Get Candidate Chat History
+
+Retrieve all internal team messages and activity for a specific candidate.
+
+```bash GET /chat/candidate/:candidateId
+curl -X GET http://localhost:8080/api/chat/candidate/42 \
+  -H "Content-Type: application/json"
+```
+
+**Path Parameters:**
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `candidateId` | integer | Yes | Candidate ID |
+
+**Response:**
+
+```json
+{
+  "data": [
+    {
+      "id": 128,
+      "message": "Just completed the technical interview - very strong performance on the system design question.",
+      "senderId": 3,
+      "senderName": "Mike",
+      "senderAvatar": "https://r2.openats.com/avatars/mike.jpg",
+      "sentAt": "2024-03-16T15:45:00Z",
+      "isSystemMessage": false
+    },
+    {
+      "id": 127,
+      "message": "Sarah moved candidate from Screening to Interview stage.",
+      "senderId": null,
+      "senderName": null,
+      "senderAvatar": null,
+      "sentAt": "2024-03-16T11:20:00Z",
+      "isSystemMessage": true
+    },
+    {
+      "id": 126,
+      "message": "Assessment completed with score: 85% (Pass). Strong knowledge of Node.js and PostgreSQL.",
+      "senderId": null,
+      "senderName": null,
+      "senderAvatar": null,
+      "sentAt": "2024-03-15T16:30:00Z",
+      "isSystemMessage": true
+    },
+    {
+      "id": 125,
+      "message": "Great resume! Let's send the technical assessment.",
+      "senderId": 2,
+      "senderName": "Sarah",
+      "senderAvatar": "https://r2.openats.com/avatars/sarah.jpg",
+      "sentAt": "2024-03-15T10:00:00Z",
+      "isSystemMessage": false
+    },
+    {
+      "id": 124,
+      "message": "John Doe applied for Senior Backend Engineer.",
+      "senderId": null,
+      "senderName": null,
+      "senderAvatar": null,
+      "sentAt": "2024-03-15T09:30:00Z",
+      "isSystemMessage": true
+    }
+  ]
+}
+```
+
+**Response Fields:**
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `id` | integer | Message ID |
+| `message` | string | Message content or system notification text |
+| `senderId` | integer/null | User ID of sender (null for system messages) |
+| `senderName` | string/null | First name of sender (null for system messages) |
+| `senderAvatar` | string/null | Avatar URL of sender (null for system messages) |
+| `sentAt` | string | Timestamp when message was sent (ISO 8601) |
+| `isSystemMessage` | boolean | Whether this is a system-generated notification |
+
+---
+
+## Message Ordering
+
+All messages are returned in **descending order** (newest first). The most recent messages appear at the beginning of the array.
+
+If you need chronological order (oldest first) for display purposes, reverse the array:
+
+```javascript
+const messages = response.data;
+const chronological = messages.reverse();
+```
+
+---
+
+## System Message Examples
+
+System messages are automatically generated for key activities:
+
+**Job Activities:**
+- "Job posting created"
+- "Job status changed to published"
+- "Job posting archived"
+- "New candidate applied: John Doe"
+- "Assessment attached to Interview stage"
+
+**Candidate Activities:**
+- "John Doe applied for Senior Backend Engineer"
+- "Sarah moved candidate from Screening to Interview stage"
+- "Assessment invite sent to candidate"
+- "Assessment completed with score: 85% (Pass)"
+- "Offer created with salary: $150,000 USD/year"
+- "Offer status changed to accepted"
+- "Resume uploaded: john_doe_resume.pdf"
+
+---
+
+## Filtering Deleted Messages
+
+The API automatically filters out deleted messages. The `isDeleted` flag is handled server-side, so you will never receive deleted messages in the response.
+
+---
+
+## Real-Time Updates
+
+<Note>
+The current chat endpoints are REST-based and require polling to fetch new messages. For real-time updates, consider implementing WebSocket connections or Server-Sent Events (SSE) on top of these endpoints.
+</Note>
+
+**Polling Example:**
+
+```javascript
+// Poll for new messages every 3 seconds
+let lastMessageId = 0;
+
+setInterval(async () => {
+  const response = await fetch('/api/chat/candidate/42');
+  const data = await response.json();
+  
+  const newMessages = data.data.filter(msg => msg.id > lastMessageId);
+  
+  if (newMessages.length > 0) {
+    lastMessageId = newMessages[0].id;
+    displayNewMessages(newMessages);
+  }
+}, 3000);
+```
+
+---
+
+## Pagination
+
+<Warning>
+The current implementation returns all messages without pagination. For jobs or candidates with extensive chat history, this may result in large response payloads. Consider implementing pagination for production use.
+</Warning>
+
+**Suggested Pagination Parameters (Future Enhancement):**
+
+```bash
+GET /chat/candidate/42?limit=50&offset=0
+GET /chat/candidate/42?before=128&limit=50
+```
+
+---
+
+## Error Responses
+
+**Invalid ID (400):**
+```json
+{
+  "error": "Invalid job ID"
+}
+```
+
+**Not Found (404):**
+```json
+{
+  "error": "Job not found"
+}
+```
+
+**Server Error (500):**
+```json
+{
+  "error": "Failed to fetch job chat history"
+}
+```
+
+---
+
+## UI Integration Tips
+
+**Distinguishing System vs User Messages:**
+
+```javascript
+const MessageComponent = ({ message }) => {
+  if (message.isSystemMessage) {
+    return (
+      <div className="system-message">
+        <InfoIcon /> {message.message}
+      </div>
+    );
+  }
+  
+  return (
+    <div className="user-message">
+      <Avatar src={message.senderAvatar} />
+      <div>
+        <strong>{message.senderName}</strong>
+        <p>{message.message}</p>
+        <time>{formatDate(message.sentAt)}</time>
+      </div>
+    </div>
+  );
+};
+```
+
+**Grouping Messages by Date:**
+
+```javascript
+const groupByDate = (messages) => {
+  return messages.reduce((groups, message) => {
+    const date = new Date(message.sentAt).toLocaleDateString();
+    if (!groups[date]) {
+      groups[date] = [];
+    }
+    groups[date].push(message);
+    return groups;
+  }, {});
+};
+```

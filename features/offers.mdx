@@ -1,0 +1,448 @@
+---
+title: Offer Management
+description: Generate, send, and track job offers for your candidates
+icon: file-contract
+---
+
+## Overview
+
+Offer Management in OpenATS streamlines the final stage of hiring by automating offer letter creation, tracking offer status, and managing candidate responses. From initial draft to accepted offer, maintain control and visibility throughout the process.
+
+## Creating Job Offers
+
+### Basic Offer Information
+
+Every offer requires these core details:
+
+<CardGroup cols={2}>
+  <Card title="Candidate" icon="user">
+    The candidate receiving the offer
+    
+    Must be an existing applicant
+  </Card>
+  <Card title="Job Position" icon="briefcase">
+    The job being offered
+    
+    Links to the original job posting
+  </Card>
+  <Card title="Template" icon="file">
+    Pre-built offer letter template (optional)
+    
+    Provides structure and standard content
+  </Card>
+  <Card title="Creator" icon="user-pen">
+    HR/hiring manager creating the offer
+    
+    Tracked for audit purposes
+  </Card>
+</CardGroup>
+
+### Compensation Details
+
+Define the compensation package being offered:
+
+<Steps>
+  <Step title="Set salary amount">
+    Specify the exact offer amount
+  </Step>
+  <Step title="Choose currency">
+    Use ISO 4217 codes (USD, EUR, GBP, etc.)
+  </Step>
+  <Step title="Select pay frequency">
+    Hourly, Daily, Weekly, Monthly, or Yearly
+  </Step>
+  <Step title="Review total package">
+    Verify all compensation details are correct
+  </Step>
+</Steps>
+
+<Note>
+  Salary information can be pre-filled from the job posting if configured, but can be customized per candidate.
+</Note>
+
+### Timeline Configuration
+
+<CardGroup cols={2}>
+  <Card title="Start Date" icon="calendar-day">
+    Proposed employment start date
+    
+    Gives candidate time to transition
+  </Card>
+  <Card title="Expiry Date" icon="calendar-xmark">
+    Deadline for candidate response
+    
+    Creates urgency while being fair
+  </Card>
+</CardGroup>
+
+**Example Timeline:**
+```
+Offer Sent: March 1, 2024
+Start Date: April 1, 2024 (1 month notice)
+Expiry Date: March 8, 2024 (7 days to respond)
+```
+
+<Warning>
+  Ensure expiry dates comply with local labor laws and provide candidates reasonable time to consider the offer.
+</Warning>
+
+## Offer Status Lifecycle
+
+Offers progress through several states from creation to final decision:
+
+<Steps>
+  <Step title="Draft">
+    **Initial state when created**
+    
+    - Offer is being prepared
+    - Can be edited freely
+    - Not visible to candidate
+    - Used for internal review/approval
+  </Step>
+  
+  <Step title="Sent">
+    **Offer has been delivered to candidate**
+    
+    - Email sent with offer details
+    - Candidate can review
+    - Awaiting candidate response
+    - Limited editing allowed
+  </Step>
+  
+  <Step title="Pending">
+    **Candidate is considering the offer**
+    
+    - Offer opened/viewed
+    - May be in negotiation
+    - Still awaiting final decision
+    - Can still expire
+  </Step>
+  
+  <Step title="Accepted">
+    **Candidate accepted the offer**
+    
+    - Hiring process complete
+    - Move to onboarding
+    - Update candidate stage
+    - Close job if position filled
+  </Step>
+  
+  <Step title="Declined">
+    **Candidate rejected the offer**
+    
+    - Hiring process ended
+    - Return candidate to pipeline or archive
+    - May extend offer to next candidate
+    - Track rejection reasons for insights
+  </Step>
+  
+  <Step title="Withdrawn">
+    **Company retracted the offer**
+    
+    - Offer cancelled by company
+    - Position may have been eliminated
+    - Candidate notified of withdrawal
+    - Rare but necessary option
+  </Step>
+</Steps>
+
+## Offer Templates
+
+Use templates to standardize offer letters while allowing customization:
+
+### Template Structure
+
+Offer templates are built using the same template system as email templates, supporting:
+
+- **Subject Line**: Email subject when offer is sent
+- **Content Blocks**: Structured offer letter body
+- **Variable Placeholders**: Dynamic data insertion
+
+<Tip>
+  Create different offer templates for various roles (executive, engineering, sales) or employment types (full-time, contract, intern).
+</Tip>
+
+### Available Variables
+
+Templates can include placeholders that auto-fill:
+
+```handlebars
+{{candidate.firstName}} {{candidate.lastName}}
+{{job.title}}
+{{offer.salary}} {{offer.currency}}
+{{offer.payFrequency}}
+{{offer.startDate}}
+{{offer.expiryDate}}
+{{company.name}}
+{{hiring_manager.name}}
+```
+
+**Example Template Usage:**
+```
+Subject: Job Offer - {{job.title}} Position at {{company.name}}
+
+Dear {{candidate.firstName}},
+
+We are pleased to offer you the position of {{job.title}} 
+with a salary of {{offer.salary}} {{offer.currency}} per {{offer.payFrequency}}.
+
+Your proposed start date is {{offer.startDate}}.
+
+Please respond by {{offer.expiryDate}}.
+```
+
+## Rendered Offer Letters
+
+### HTML Generation
+
+When an offer is prepared for sending:
+
+<Steps>
+  <Step title="Template selection">
+    Choose the appropriate offer template
+  </Step>
+  <Step title="Variable replacement">
+    System fills in all placeholders with actual data
+  </Step>
+  <Step title="HTML rendering">
+    Generate final HTML version of offer letter
+  </Step>
+  <Step title="Storage">
+    Save rendered HTML in `renderedHtml` field
+  </Step>
+  <Step title="Preview & send">
+    Review before sending to candidate
+  </Step>
+</Steps>
+
+<Note>
+  The rendered HTML is stored permanently, preserving the exact offer sent even if templates or data change later.
+</Note>
+
+## Sending Offers
+
+### Manual Sending Process
+
+<Steps>
+  <Step title="Create draft offer">
+    Enter all offer details and select template
+  </Step>
+  <Step title="Generate preview">
+    Review the rendered offer letter
+  </Step>
+  <Step title="Make adjustments">
+    Edit salary, dates, or template as needed
+  </Step>
+  <Step title="Send offer">
+    Update status to 'sent' which triggers email delivery
+  </Step>
+  <Step title="Track in timeline">
+    sentAt timestamp recorded for reference
+  </Step>
+</Steps>
+
+### Automatic Sending (Pipeline Integration)
+
+Offers can be automatically generated when candidates reach offer stages:
+
+**Configuration in Pipeline Stage:**
+- Offer template selected
+- Offer mode set to "automatic"
+- Expiry days configured
+
+**When candidate moves to stage:**
+1. Offer draft created with job salary info
+2. Start date calculated (e.g., 2 weeks from today)
+3. Expiry date set (e.g., 7 days from today)
+4. Offer automatically sent to candidate
+
+<Warning>
+  Use automatic sending cautiously. For senior roles or complex negotiations, manual review is recommended.
+</Warning>
+
+## Tracking Sent Offers
+
+Monitor offer status and candidate responses:
+
+### Offer Dashboard
+
+View all offers with key information:
+- Candidate name and position
+- Offer amount and terms
+- Current status
+- Days until expiry
+- Sent date
+
+### Filtering Options
+
+```
+By Job: See all offers for a specific position
+By Status: Filter to pending, accepted, etc.
+By Date Range: Offers sent in last 30 days
+Expiring Soon: Offers nearing expiry date
+```
+
+## Managing Offer Responses
+
+### Candidate Accepts
+
+<Steps>
+  <Step title="Update offer status">
+    Change status to 'accepted'
+  </Step>
+  <Step title="Update candidate stage">
+    Move to 'Hired' or 'Onboarding' stage
+  </Step>
+  <Step title="Close job (optional)">
+    If position filled, close job posting
+  </Step>
+  <Step title="Notify team">
+    Alert hiring team of acceptance
+  </Step>
+  <Step title="Begin onboarding">
+    Transition to onboarding workflow
+  </Step>
+</Steps>
+
+### Candidate Declines
+
+<Steps>
+  <Step title="Update offer status">
+    Change status to 'declined'
+  </Step>
+  <Step title="Capture feedback">
+    Note reason for decline if provided
+  </Step>
+  <Step title="Update candidate stage">
+    Move to 'Declined Offer' stage
+  </Step>
+  <Step title="Evaluate next steps">
+    Extend offer to alternate candidate?
+  </Step>
+</Steps>
+
+<Tip>
+  Track decline reasons to identify patterns (e.g., salary too low, relocation concerns) and improve future offers.
+</Tip>
+
+## Offer Modifications
+
+### Editing Offers
+
+What you can change depends on offer status:
+
+**Draft Offers:**
+- All fields can be modified
+- Delete and recreate if needed
+- No candidate impact
+
+**Sent/Pending Offers:**
+- Limited modifications allowed
+- Changing terms may require withdrawal and new offer
+- Consider candidate communication
+
+<Warning>
+  Modifying sent offers can create confusion. If significant changes are needed, consider withdrawing the original and creating a new offer.
+</Warning>
+
+### Withdrawing Offers
+
+<Steps>
+  <Step title="Update status to 'withdrawn'">
+    Formally retract the offer
+  </Step>
+  <Step title="Notify candidate immediately">
+    Send withdrawal notification email
+  </Step>
+  <Step title="Document reason">
+    Record why offer was withdrawn
+  </Step>
+  <Step title="Update candidate stage">
+    Move to appropriate stage or reject
+  </Step>
+</Steps>
+
+## Deleting Offers
+
+<Warning>
+  Deleting offers permanently removes:
+  - Offer details and terms
+  - Rendered offer letter HTML
+  - Sent date and status history
+  - All associated data
+  
+  This action cannot be undone.
+</Warning>
+
+**Instead of deleting, consider:**
+- Setting status to 'withdrawn' or 'declined'
+- Archiving old offers
+- Maintaining records for compliance
+
+## Data Relationships
+
+### Candidate Link
+
+Offers maintain references to candidates:
+- Cannot create offer without valid candidate
+- Deleting candidate removes associated offers (cascade)
+- View all offers from candidate profile
+
+### Job Link  
+
+Offers reference the job position:
+- Cannot delete job while offers exist (restrict)
+- Helps with offer analytics per position
+- Salary info can default from job
+
+### Template Link
+
+Offers optionally use templates:
+- Template can be changed before sending
+- Deleting template sets to null (no offer deletion)
+- Rendered HTML preserved even if template deleted
+
+## Best Practices
+
+<AccordionGroup>
+  <Accordion title="Review all offers before sending">
+    Even with templates, verify compensation, dates, and terms are correct. Errors can damage credibility.
+  </Accordion>
+  
+  <Accordion title="Set realistic expiry dates">
+    Give candidates adequate time (typically 5-7 days for standard roles, 14+ days for senior positions).
+  </Accordion>
+  
+  <Accordion title="Communicate promptly">
+    Update offer status immediately when candidates respond to maintain accurate pipeline data.
+  </Accordion>
+  
+  <Accordion title="Use templates consistently">
+    Standardize offer language to ensure legal compliance and professional presentation.
+  </Accordion>
+  
+  <Accordion title="Track decline reasons">
+    Note why candidates reject offers to inform compensation strategy and improve acceptance rates.
+  </Accordion>
+  
+  <Accordion title="Preserve offer records">
+    Keep offer history for compliance, analytics, and future reference even after positions are filled.
+  </Accordion>
+</AccordionGroup>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Create Offer Templates" icon="file" href="/features/templates">
+    Build standardized offer letter templates
+  </Card>
+  <Card title="Configure Pipeline Stages" icon="diagram-project" href="/features/pipeline-stages">
+    Set up automatic offer generation
+  </Card>
+  <Card title="Track Candidates" icon="user-check" href="/features/candidate-tracking">
+    Move candidates through to offer stage
+  </Card>
+  <Card title="Manage Jobs" icon="briefcase" href="/features/job-management">
+    Update job status when positions fill
+  </Card>
+</CardGroup>

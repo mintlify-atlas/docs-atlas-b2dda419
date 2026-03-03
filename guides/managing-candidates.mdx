@@ -1,0 +1,456 @@
+---
+title: Managing Candidates
+description: Guide for reviewing, filtering, and moving candidates through your hiring pipeline
+---
+
+This guide covers how to manage candidate applications, review profiles, move candidates between pipeline stages, and communicate with applicants.
+
+## Viewing All Candidates
+
+Access the candidates page from the dashboard sidebar:
+
+1. Click **Candidates** in the sidebar
+2. You'll see a table with all candidates across all jobs
+
+### Candidate Table Columns
+
+The candidate table displays:
+
+- **Candidate Name** - Clickable name to view full profile
+- **Stage Status** - Current pipeline stage with color-coded badge:
+  - 🟢 Green - Offer, Applied, Screening stages
+  - 🔵 Purple - Interview stage
+  - 🔴 Red - Rejected, Disqualified
+- **Applied for** - Job position title
+- **Tags** - Custom tags for categorization
+- **Applied on** - Time since application (e.g., "5 hours ago", "1 day ago")
+
+## Filtering and Search
+
+<Steps>
+  <Step title="Search by Name">
+    Use the search bar to find candidates by name:
+    ```text
+    Type in: Candidate name or email
+    ```
+    The search filters results in real-time.
+  </Step>
+
+  <Step title="Filter by Job Position">
+    Select a job from the **Job Position** dropdown to see only candidates for that role:
+    - Software Engineer
+    - DevOps
+    - (All your active jobs appear here)
+  </Step>
+
+  <Step title="Filter by Stage">
+    Select a stage from the **Stage** dropdown:
+    - Screening
+    - Interview
+    - Offer
+    - Rejected
+    - (All your pipeline stages)
+
+    <Tip>
+    Combine job position and stage filters to narrow down specific candidate groups.
+    </Tip>
+  </Step>
+
+  <Step title="Clear Filters">
+    Click **Clear All** to reset all filters and view all candidates.
+  </Step>
+</Steps>
+
+## Viewing Candidate Details
+
+<Steps>
+  <Step title="Open Candidate Profile">
+    Click on any candidate row to open their detailed profile in a side panel.
+  </Step>
+
+  <Step title="Review Candidate Information">
+    The profile header shows:
+    - **Name and Avatar**
+    - **Current Stage** (color-coded badge)
+    - **Applied Role** and time since application
+    - **Contact Information**:
+      - 📞 Phone number
+      - ✉️ Email address
+      - 💼 LinkedIn profile
+
+    <Note>
+    Click any contact detail to copy it or open the respective application (email client, LinkedIn, etc.).
+    </Note>
+  </Step>
+
+  <Step title="Review Resume/CV">
+    The main panel displays the candidate's resume:
+    - View the PDF preview directly in the panel
+    - Click **View CV in New Tab** to open in full screen
+    - Scroll through the document to review qualifications
+
+    <Tip>
+    Keep the candidate profile open while reviewing resumes to quickly add notes or move to next stage.
+    </Tip>
+  </Step>
+</Steps>
+
+## Working with Candidate Tabs
+
+The candidate detail panel has three tabs:
+
+### Internal Notes Tab
+
+Collaborate with your team on candidate evaluations:
+
+<Steps>
+  <Step title="View Existing Notes">
+    See all notes from team members with:
+    - Author name and avatar
+    - Timestamp (e.g., "2h ago", "5 minutes ago")
+    - Note content
+  </Step>
+
+  <Step title="Add a New Note">
+    1. Click in the **"Write your note here..."** field
+    2. Type your note about the candidate
+    3. Use **@mentions** to notify team members:
+       ```text
+       @Risikesan This candidate has excellent API development experience
+       ```
+    4. Click the send button or press **Ctrl+Enter**
+
+    <Note>
+    Internal notes are only visible to your hiring team, never to candidates.
+    </Note>
+  </Step>
+
+  <Step title="Best Practices for Notes">
+    - Document interview feedback immediately
+    - Highlight strengths and concerns
+    - Tag relevant team members for input
+    - Keep notes professional and objective
+  </Step>
+</Steps>
+
+### Messages Tab
+
+View all email communications with the candidate:
+- Automated emails (application confirmations, rejections, offers)
+- Manual emails sent through OpenATS
+- Complete communication history
+
+<Note>
+If no communications have been sent, you'll see "No communications logs found."
+</Note>
+
+### Assessments Score Tab
+
+View technical assessment results:
+- Assessment name and type
+- Score and completion status  
+- Detailed answers (if applicable)
+- Comparison to other candidates
+
+<Note>
+If the candidate hasn't completed any assessments, you'll see "No assessment scores available."
+</Note>
+
+## Moving Candidates Through the Pipeline
+
+To move a candidate to a different stage:
+
+<Steps>
+  <Step title="Access Job Pipeline View">
+    From the Jobs page:
+    1. Click on a job title
+    2. Click **Go To Hiring Pipeline**
+    
+    You'll see a Kanban-style board with all pipeline stages.
+  </Step>
+
+  <Step title="Drag and Drop Candidates">
+    Drag a candidate card from one column to another:
+    1. Click and hold on a candidate card
+    2. Drag to the target stage column
+    3. Release to drop
+
+    The candidate's stage updates immediately.
+
+    <Tip>
+    Automated actions (like sending rejection emails) trigger when you move candidates to configured stages.
+    </Tip>
+  </Step>
+
+  <Step title="Verify Stage Change">
+    After moving a candidate:
+    - The stage badge updates
+    - Configured emails send automatically
+    - Team members receive notifications
+    - Stage change is logged in candidate history
+  </Step>
+</Steps>
+
+### API Method for Moving Candidates
+
+Move candidates programmatically:
+
+```javascript
+POST /api/candidates/{id}/move
+
+{
+  "newStageId": 3,
+  "movedBy": 1  // User ID
+}
+```
+
+## Adding Candidates Manually
+
+<Steps>
+  <Step title="Click Add Candidate">
+    From the Candidates page, click **+ Add Candidate** in the top right.
+  </Step>
+
+  <Step title="Enter Candidate Information">
+    Fill in the form:
+    - **First Name** (required)
+    - **Last Name** (required)
+    - **Email Address** (required, must be valid)
+    - **Phone Number** (optional)
+    - **Resume URL** (optional)
+  </Step>
+
+  <Step title="Select Job and Stage">
+    - Choose the job they're applying for
+    - Select initial pipeline stage (default: "Applied")
+  </Step>
+
+  <Step title="Add Custom Question Answers">
+    If the job has custom questions, you can enter the candidate's answers:
+    ```json
+    {
+      "questionId": 1,
+      "answerText": "$80,000 - $100,000"
+    }
+    ```
+  </Step>
+
+  <Step title="Save the Candidate">
+    Click **Add Candidate** to save.
+
+    <Note>
+    Manually added candidates appear in the pipeline immediately and receive any configured automated emails.
+    </Note>
+  </Step>
+</Steps>
+
+## Archiving Candidates
+
+Remove candidates from your active pipeline without deleting them:
+
+<Steps>
+  <Step title="Open Candidate Menu">
+    Click the **⋮** (three dots) menu on any candidate row.
+  </Step>
+
+  <Step title="Select Archive">
+    Click **Archive** from the dropdown menu.
+  </Step>
+
+  <Step title="Confirm Archive">
+    In the confirmation dialog:
+    - Review the candidate name
+    - Click **Archive** to confirm
+
+    <Warning>
+    Archived candidates are moved to Settings → Archive. They can be permanently deleted from there.
+    </Warning>
+  </Step>
+</Steps>
+
+### When to Archive Candidates
+
+- Candidates who are no longer being considered
+- Duplicate applications
+- Candidates who withdrew their application
+- Applications from closed jobs
+
+<Tip>
+Archiving keeps your active candidate list clean while preserving application history for compliance.
+</Tip>
+
+## Bulk Actions
+
+Perform actions on multiple candidates at once:
+
+1. **Select multiple candidates** using checkboxes (if available)
+2. Choose a bulk action:
+   - Move to stage
+   - Archive
+   - Export to CSV
+   - Send bulk email
+
+## Candidate Data Export
+
+Export candidate data for reporting or backup:
+
+1. Apply any filters (job, stage, date range)
+2. Click **Export** button
+3. Choose format:
+   - **CSV** - For spreadsheets
+   - **PDF** - For reports
+4. Download the file
+
+### Exported Data Includes
+
+- Candidate name and contact information
+- Application date and time
+- Current pipeline stage
+- Applied position
+- Custom question answers
+- Stage movement history
+
+## Email Communication
+
+Send emails to candidates directly from OpenATS:
+
+<Steps>
+  <Step title="Open Candidate Profile">
+    Click on a candidate to open their profile.
+  </Step>
+
+  <Step title="Click Email Icon">
+    Click the ✉️ email icon in the contact information section.
+  </Step>
+
+  <Step title="Compose Email">
+    - Choose an email template or write custom message
+    - Add CC recipients
+    - Attach files if needed
+  </Step>
+
+  <Step title="Send or Schedule">
+    - **Send Now** - Sends immediately
+    - **Schedule** - Choose date and time to send
+  </Step>
+</Steps>
+
+<Note>
+All sent emails appear in the candidate's Messages tab for full communication history.
+</Note>
+
+## Best Practices
+
+<AccordionGroup>
+  <Accordion title="Review Applications Promptly">
+    Set goals for response times:
+    - **Within 24 hours** - Acknowledge application received
+    - **Within 3-5 days** - Complete initial screening
+    - **Within 1-2 weeks** - Provide feedback or rejection
+
+    Quick responses improve candidate experience and employer brand.
+  </Accordion>
+
+  <Accordion title="Use Internal Notes Effectively">
+    Document your evaluation process:
+    ```text
+    ✅ Good notes:
+    "Strong technical skills in Java and APIs. Interview showed excellent 
+    communication. Minor concern about DevOps experience. Recommend moving 
+    to final round. @HiringManager please review."
+
+    ❌ Poor notes:
+    "Good candidate"
+    "Pass"
+    "Nice resume"
+    ```
+
+    Detailed notes help with:
+    - Future reference for similar roles
+    - Legal compliance and record-keeping
+    - Team collaboration and decision-making
+  </Accordion>
+
+  <Accordion title="Maintain Organized Pipeline Stages">
+    Keep your pipeline clean:
+    - Move rejected candidates promptly
+    - Don't let candidates sit in "Screening" too long
+    - Regularly review "Interview" stage for follow-ups
+    - Clear out old "Applied" candidates
+  </Accordion>
+
+  <Accordion title="Communicate Rejections Professionally">
+    Always send rejection emails:
+    - Use personalized templates
+    - Provide constructive feedback when possible
+    - Encourage future applications
+    - Keep candidates in your talent pool
+
+    Example rejection email:
+    ```text
+    Thank you for your interest in [Position] at [Company]. 
+    We appreciate the time you took to apply.
+
+    After careful review, we've decided to move forward with 
+    other candidates whose experience more closely matches 
+    our current needs.
+
+    We encourage you to apply for future openings that match 
+    your skills. Best of luck in your job search!
+    ```
+  </Accordion>
+</AccordionGroup>
+
+## Keyboard Shortcuts
+
+Speed up candidate review with shortcuts:
+
+- **→** - Next candidate
+- **←** - Previous candidate
+- **Esc** - Close candidate profile
+- **Ctrl+Enter** - Send note/message
+- **/** - Focus search bar
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="Candidate Not Moving Between Stages">
+    Check these permissions:
+    - You have permission to edit candidates
+    - The target stage exists for this job
+    - The job is not closed or archived
+  </Accordion>
+
+  <Accordion title="Email Not Sending">
+    Verify:
+    - Email template is configured
+    - Candidate email address is valid
+    - Email service is connected (check Settings)
+    - Check spam/sent folder
+  </Accordion>
+
+  <Accordion title="Resume Not Displaying">
+    Common issues:
+    - Resume URL is broken or expired
+    - File format not supported (use PDF)
+    - File size too large (max 10MB)
+    - Browser permissions blocking PDF viewer
+  </Accordion>
+</AccordionGroup>
+
+## Related Guides
+
+<CardGroup cols={2}>
+  <Card title="Creating Jobs" icon="briefcase" href="/guides/creating-jobs">
+    Set up job postings and hiring pipelines
+  </Card>
+  <Card title="Email Templates" icon="envelope" href="/guides/email-templates">
+    Create automated email responses
+  </Card>
+  <Card title="Hiring Team" icon="users" href="/guides/hiring-team">
+    Manage team permissions and access
+  </Card>
+  <Card title="Custom Questions" icon="message-question" href="/guides/custom-questions">
+    Add custom application form questions
+  </Card>
+</CardGroup>

@@ -1,0 +1,327 @@
+---
+title: Pipeline Stages
+description: Customize your hiring workflow with flexible pipeline stages
+icon: diagram-project
+---
+
+## Overview
+
+Pipeline stages define the journey candidates take through your hiring process. OpenATS provides flexible, customizable stages that adapt to your unique workflow while automating key actions along the way.
+
+## Understanding Pipeline Architecture
+
+### Global Stage Templates
+
+OpenATS includes system-wide pipeline stage templates that serve as blueprints:
+
+- **Applied**: Initial stage when candidates submit applications
+- **Screening**: Review resumes and responses
+- **Interview**: Various interview rounds
+- **Assessment**: Technical or skills testing
+- **Offer**: Extending job offers
+- **Hired**: Successful candidates
+- **Rejected**: Declined applications
+
+<Note>
+  Stage templates are reusable across all jobs, ensuring consistency while allowing per-job customization.
+</Note>
+
+### Job-Specific Pipelines
+
+Each job has its own pipeline instance based on templates:
+
+<Steps>
+  <Step title="Template Selection">
+    Choose which global templates to include
+  </Step>
+  <Step title="Customization">
+    Rename stages or adjust order for this job
+  </Step>
+  <Step title="Configuration">
+    Add stage-specific actions and templates
+  </Step>
+  <Step title="Activation">
+    Pipeline becomes active when job is published
+  </Step>
+</Steps>
+
+## Stage Configuration
+
+### Basic Properties
+
+<CardGroup cols={2}>
+  <Card title="Stage Name" icon="tag">
+    Display name shown in the UI (e.g., "Phone Screen", "Technical Round")
+  </Card>
+  <Card title="Position" icon="arrow-down-1-9">
+    Order in the pipeline (lower numbers come first)
+  </Card>
+  <Card title="Stage Type" icon="shapes">
+    Special behavior: Assessment, Offer, Rejection, or None
+  </Card>
+  <Card title="Deletable" icon="trash">
+    Whether stage can be removed from job pipelines
+  </Card>
+</CardGroup>
+
+### Stage Types & Special Behaviors
+
+Stages can have special types that trigger specific actions:
+
+<Tabs>
+  <Tab title="None">
+    Standard stage with no special behavior. Used for general workflow steps like "Screening" or "Interview".
+  </Tab>
+  <Tab title="Assessment">
+    Triggers technical assessment when candidate enters this stage.
+    
+    **Configuration:**
+    - Select which assessment to send
+    - Automatic invitation email
+    - Unique token generation
+    - Expiry time enforcement
+  </Tab>
+  <Tab title="Offer">
+    Initiates offer generation and delivery.
+    
+    **Configuration:**
+    - Offer template selection
+    - Offer mode (manual/automatic)
+    - Expiry days setting
+  </Tab>
+  <Tab title="Rejection">
+    Sends rejection notification to candidate.
+    
+    **Configuration:**
+    - Rejection email template
+    - Automatic or manual sending
+  </Tab>
+</Tabs>
+
+## Offer Stage Configuration
+
+Offer stages have additional settings to control the offer process:
+
+### Offer Template
+
+Select a pre-built template that defines:
+- Email subject and body
+- Offer letter format
+- Variable placeholders (salary, start date, etc.)
+
+### Offer Mode
+
+<CardGroup cols={2}>
+  <Card title="Manual" icon="hand">
+    HR reviews and approves before sending
+    
+    **Best for:** Executive roles, complex negotiations
+  </Card>
+  <Card title="Automatic" icon="wand-magic-sparkles">
+    System generates and sends immediately
+    
+    **Best for:** High-volume hiring, standard offers
+  </Card>
+</CardGroup>
+
+### Offer Expiry
+
+Set the number of days until the offer expires:
+
+```
+Example: 7 days
+- Offer sent: January 1
+- Candidate must respond by: January 8
+```
+
+<Warning>
+  Ensure offer expiry times comply with local labor laws and provide candidates reasonable time to consider.
+</Warning>
+
+## Rejection Stage Configuration
+
+### Rejection Template
+
+Assign an email template that:
+- Thanks candidates for their time
+- Provides closure on their application
+- Maintains positive employer brand
+- Optionally encourages future applications
+
+<Tip>
+  Create different rejection templates for various stages (e.g., post-phone-screen vs. post-final-interview) to provide appropriate context.
+</Tip>
+
+## Assessment Stage Configuration
+
+When configuring an assessment stage:
+
+<Steps>
+  <Step title="Select Assessment">
+    Choose from your library of technical assessments
+  </Step>
+  <Step title="Set as Trigger Stage">
+    Define this stage as the assessment trigger point
+  </Step>
+  <Step title="Candidate Movement">
+    When moved to this stage, candidate receives assessment link
+  </Step>
+  <Step title="Track Completion">
+    View attempt status and scores in candidate profile
+  </Step>
+</Steps>
+
+<Note>
+  Only one assessment can be attached per stage, but you can have multiple assessment stages in a pipeline.
+</Note>
+
+## Managing Pipeline Positions
+
+### Ordering Stages
+
+Stages are ordered by their position number:
+
+```
+1. Applied
+2. Screening  
+3. Phone Interview
+4. Technical Assessment
+5. Final Interview
+6. Offer
+7. Hired
+```
+
+<Tip>
+  Leave gaps in position numbering (e.g., 10, 20, 30) to make it easier to insert new stages later without renumbering everything.
+</Tip>
+
+### Unique Positions
+
+Each job can only have one stage at each position number, ensuring:
+- Clear linear progression
+- No ambiguous ordering
+- Predictable candidate flow
+
+## Hiring Teams
+
+Assign team members to jobs to control access and collaboration:
+
+### Adding Team Members
+
+<Steps>
+  <Step title="Navigate to Job Settings">
+    Open the job you want to configure
+  </Step>
+  <Step title="Access Hiring Team">
+    Find the team management section
+  </Step>
+  <Step title="Add Users">
+    Select users from your organization
+  </Step>
+  <Step title="Save Changes">
+    Team members can now view and manage candidates
+  </Step>
+</Steps>
+
+### Team Member Permissions
+
+Hiring team members can:
+- View all candidates for the job
+- Move candidates between stages
+- View assessment results
+- Create and send offers
+- Access stage history and analytics
+
+<Note>
+  Team assignments are job-specific. Users can be on multiple hiring teams across different jobs.
+</Note>
+
+## Stage Templates vs. Job Stages
+
+### Key Differences
+
+| Feature | Stage Templates | Job Pipeline Stages |
+|---------|----------------|---------------------|
+| **Scope** | System-wide | Job-specific |
+| **Reusability** | Used across all jobs | Unique to one job |
+| **Modification** | Admin only | Per-job configuration |
+| **Deletion** | Restricted for core stages | Configurable |
+
+### Using Templates Effectively
+
+<AccordionGroup>
+  <Accordion title="Create role-specific templates">
+    Define templates for Engineering, Sales, Operations, etc. to speed up job creation.
+  </Accordion>
+  
+  <Accordion title="Standardize common stages">
+    Use identical stage names across jobs for better reporting and analytics.
+  </Accordion>
+  
+  <Accordion title="Allow flexibility">
+    Let hiring managers customize stage names while maintaining the template structure.
+  </Accordion>
+  
+  <Accordion title="Version control">
+    Track template changes to understand how pipeline evolution affects metrics.
+  </Accordion>
+</AccordionGroup>
+
+## Stage Linking & References
+
+Job stages maintain relationships:
+
+### Source Template Reference
+
+Each job stage optionally links back to its source template:
+- Tracks which template was used
+- Helps update multiple jobs when templates change
+- Maintains consistency across jobs
+
+### Template Relationships
+
+Stages reference:
+- **Offer Templates**: For offer stage email/document generation
+- **Rejection Templates**: For rejection notification emails
+- **Assessments**: For technical testing triggers
+
+## Best Practices
+
+<AccordionGroup>
+  <Accordion title="Keep pipelines simple">
+    Aim for 5-7 stages. Too many stages slow down hiring and confuse candidates.
+  </Accordion>
+  
+  <Accordion title="Name stages clearly">
+    Use descriptive names that hiring managers and candidates understand (avoid internal jargon).
+  </Accordion>
+  
+  <Accordion title="Position assessments strategically">
+    Place technical assessments after initial screening but before time-intensive interviews.
+  </Accordion>
+  
+  <Accordion title="Standardize across similar roles">
+    Use consistent pipelines for similar positions to enable better hiring analytics.
+  </Accordion>
+  
+  <Accordion title="Review and optimize">
+    Regularly analyze where candidates drop off and streamline bottleneck stages.
+  </Accordion>
+</AccordionGroup>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Create Assessments" icon="clipboard-check" href="/features/assessments">
+    Build technical screening tests
+  </Card>
+  <Card title="Design Offer Templates" icon="file-contract" href="/features/offers">
+    Prepare offer letter templates
+  </Card>
+  <Card title="Build Email Templates" icon="envelope" href="/features/templates">
+    Create candidate communication templates
+  </Card>
+  <Card title="Track Candidates" icon="user-check" href="/features/candidate-tracking">
+    Start managing applications
+  </Card>
+</CardGroup>

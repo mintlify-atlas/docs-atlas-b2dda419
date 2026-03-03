@@ -1,0 +1,394 @@
+---
+title: 'Custom Questions'
+description: 'Manage application form questions and assessment triggers'
+---
+
+## Overview
+
+Custom Questions endpoints allow you to add field-specific questions to job application forms and configure automated assessment triggers when candidates reach certain pipeline stages.
+
+---
+
+## Get Custom Questions
+
+<CodeGroup>
+```bash GET /jobs/{jobId}/questions
+curl -X GET http://localhost:8080/api/jobs/1/questions
+```
+</CodeGroup>
+
+Retrieve all custom application form questions for a specific job.
+
+### Path Parameters
+
+<ParamField path="jobId" type="integer" required>
+  The unique identifier of the job
+</ParamField>
+
+### Response
+
+```json
+{
+  "data": [
+    {
+      "id": 1,
+      "jobId": 1,
+      "title": "Which frameworks are you familiar with?",
+      "questionType": "checkbox",
+      "isRequired": true,
+      "position": 1,
+      "options": [
+        {
+          "id": 1,
+          "label": "React",
+          "isCorrect": false,
+          "position": 1
+        },
+        {
+          "id": 2,
+          "label": "Vue.js",
+          "isCorrect": false,
+          "position": 2
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "jobId": 1,
+      "title": "Why do you want to join our team?",
+      "questionType": "long_answer",
+      "isRequired": false,
+      "position": 2,
+      "options": []
+    }
+  ]
+}
+```
+
+---
+
+## Create Custom Question
+
+<CodeGroup>
+```bash POST /jobs/{jobId}/questions
+curl -X POST http://localhost:8080/api/jobs/1/questions \
+  -H "Content-Type: application/json" \
+  -d '{
+    "title": "Which frameworks do you know?",
+    "questionType": "checkbox",
+    "isRequired": true,
+    "position": 1,
+    "options": [
+      {"label": "React", "isCorrect": false, "position": 1},
+      {"label": "Vue.js", "isCorrect": false, "position": 2}
+    ]
+  }'
+```
+</CodeGroup>
+
+Add a new custom question to the job application form.
+
+### Path Parameters
+
+<ParamField path="jobId" type="integer" required>
+  The unique identifier of the job
+</ParamField>
+
+### Body Parameters
+
+<ParamField body="title" type="string" required>
+  The question text (max 500 characters)
+</ParamField>
+
+<ParamField body="questionType" type="string" required>
+  Type of question. Options: `short_answer`, `long_answer`, `checkbox`, `radio`
+</ParamField>
+
+<ParamField body="isRequired" type="boolean" default="false">
+  Whether the question must be answered to submit the application
+</ParamField>
+
+<ParamField body="position" type="integer" required>
+  Display order on the application form (must be positive)
+</ParamField>
+
+<ParamField body="options" type="array">
+  Array of answer options (required for `checkbox` and `radio` types, minimum 2 options)
+</ParamField>
+
+<ParamField body="options[].label" type="string" required>
+  The option text (max 500 characters)
+</ParamField>
+
+<ParamField body="options[].isCorrect" type="boolean" default="false">
+  Whether this option is marked as correct (for filtering/scoring)
+</ParamField>
+
+<ParamField body="options[].position" type="integer" required>
+  Display order of this option
+</ParamField>
+
+### Response
+
+```json
+{
+  "data": {
+    "id": 3,
+    "jobId": 1,
+    "title": "Which frameworks do you know?",
+    "questionType": "checkbox",
+    "isRequired": true,
+    "position": 1,
+    "options": [
+      {
+        "id": 5,
+        "label": "React",
+        "isCorrect": false,
+        "position": 1
+      },
+      {
+        "id": 6,
+        "label": "Vue.js",
+        "isCorrect": false,
+        "position": 2
+      }
+    ]
+  }
+}
+```
+
+---
+
+## Update Custom Question
+
+<CodeGroup>
+```bash PUT /jobs/{jobId}/questions/{questionId}
+curl -X PUT http://localhost:8080/api/jobs/1/questions/3 \
+  -H "Content-Type: application/json" \
+  -d '{
+    "title": "What JavaScript frameworks do you have experience with?",
+    "isRequired": false
+  }'
+```
+</CodeGroup>
+
+Update an existing custom question.
+
+### Path Parameters
+
+<ParamField path="jobId" type="integer" required>
+  The unique identifier of the job
+</ParamField>
+
+<ParamField path="questionId" type="integer" required>
+  The unique identifier of the custom question
+</ParamField>
+
+### Body Parameters
+
+All parameters are optional. Only include fields you want to update.
+
+<ParamField body="title" type="string">
+  Updated question text
+</ParamField>
+
+<ParamField body="questionType" type="string">
+  Updated question type
+</ParamField>
+
+<ParamField body="isRequired" type="boolean">
+  Updated required status
+</ParamField>
+
+<ParamField body="position" type="integer">
+  Updated display order
+</ParamField>
+
+<ParamField body="options" type="array">
+  Updated options array
+</ParamField>
+
+### Response
+
+```json
+{
+  "data": {
+    "id": 3,
+    "jobId": 1,
+    "title": "What JavaScript frameworks do you have experience with?",
+    "questionType": "checkbox",
+    "isRequired": false,
+    "position": 1
+  }
+}
+```
+
+---
+
+## Delete Custom Question
+
+<CodeGroup>
+```bash DELETE /jobs/{jobId}/questions/{questionId}
+curl -X DELETE http://localhost:8080/api/jobs/1/questions/3
+```
+</CodeGroup>
+
+Remove a custom question from the application form.
+
+### Path Parameters
+
+<ParamField path="jobId" type="integer" required>
+  The unique identifier of the job
+</ParamField>
+
+<ParamField path="questionId" type="integer" required>
+  The unique identifier of the custom question to delete
+</ParamField>
+
+### Response
+
+```json
+{
+  "data": {
+    "id": 3,
+    "jobId": 1,
+    "title": "What JavaScript frameworks do you have experience with?"
+  }
+}
+```
+
+---
+
+## Get Assessment Attachment
+
+<CodeGroup>
+```bash GET /jobs/{jobId}/assessment-attachment
+curl -X GET http://localhost:8080/api/jobs/1/assessment-attachment
+```
+</CodeGroup>
+
+Retrieve which assessment is automatically sent when candidates reach a specific pipeline stage.
+
+### Path Parameters
+
+<ParamField path="jobId" type="integer" required>
+  The unique identifier of the job
+</ParamField>
+
+### Response
+
+```json
+{
+  "data": {
+    "id": 1,
+    "jobId": 1,
+    "assessmentId": 3,
+    "triggerStageId": 2,
+    "assessment": {
+      "id": 3,
+      "title": "Backend Node.js Assessment",
+      "description": "Technical screening test",
+      "timeLimit": 60,
+      "passScore": 70
+    },
+    "stage": {
+      "id": 2,
+      "name": "Technical Assessment",
+      "position": 2
+    }
+  }
+}
+```
+
+---
+
+## Set Assessment Automation
+
+<CodeGroup>
+```bash POST /jobs/{jobId}/assessment-attachment
+curl -X POST http://localhost:8080/api/jobs/1/assessment-attachment \
+  -H "Content-Type: application/json" \
+  -d '{
+    "assessmentId": 3,
+    "triggerStageId": 2
+  }'
+```
+</CodeGroup>
+
+Configure an assessment to be automatically sent when candidates reach a specific pipeline stage.
+
+### Path Parameters
+
+<ParamField path="jobId" type="integer" required>
+  The unique identifier of the job
+</ParamField>
+
+### Body Parameters
+
+<ParamField body="assessmentId" type="integer" required>
+  The ID of the assessment to automatically send
+</ParamField>
+
+<ParamField body="triggerStageId" type="integer" required>
+  The pipeline stage ID that triggers the assessment invite
+</ParamField>
+
+### Response
+
+```json
+{
+  "data": {
+    "id": 1,
+    "jobId": 1,
+    "assessmentId": 3,
+    "triggerStageId": 2
+  }
+}
+```
+
+### Error Responses
+
+<ResponseField name="400 Bad Request">
+  Stage not found or assessment not found
+</ResponseField>
+
+---
+
+## Remove Assessment Automation
+
+<CodeGroup>
+```bash DELETE /jobs/{jobId}/assessment-attachment/{stageId}
+curl -X DELETE http://localhost:8080/api/jobs/1/assessment-attachment/2
+```
+</CodeGroup>
+
+Remove the automatic assessment trigger for a specific pipeline stage.
+
+### Path Parameters
+
+<ParamField path="jobId" type="integer" required>
+  The unique identifier of the job
+</ParamField>
+
+<ParamField path="stageId" type="integer" required>
+  The pipeline stage ID from which to remove the assessment trigger
+</ParamField>
+
+### Response
+
+```json
+{
+  "data": {
+    "id": 1,
+    "jobId": 1,
+    "assessmentId": 3,
+    "triggerStageId": 2
+  }
+}
+```
+
+### Error Responses
+
+<ResponseField name="404 Not Found">
+  No assessment attached to that stage
+</ResponseField>

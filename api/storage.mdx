@@ -1,0 +1,444 @@
+---
+title: Storage
+description: File upload and cloud storage endpoints for resumes, logos, and attachments
+---
+
+## Overview
+
+The Storage API provides file upload capabilities using Cloudflare R2 (S3-compatible object storage). It handles secure uploads for candidate resumes and company logos, with automatic file naming and public URL generation.
+
+**Supported Operations:**
+- Resume uploads (PDF format recommended)
+- Company logo uploads (images)
+- Automatic UUID-based file naming
+- Public URL generation
+- Content-type detection
+
+**Storage Structure:**
+```
+r2.openats.com/
+├── resumes/
+│   ├── 550e8400-e29b-41d4-a716-446655440000.pdf
+│   └── 6ba7b810-9dad-11d1-80b4-00c04fd430c8.pdf
+└── logos/
+    ├── 7c9e6679-7425-40de-944b-e07fc1f90ae7.png
+    └── 886313e1-3b8a-5372-9b90-0c9aee199e5d.jpg
+```
+
+---
+
+## Upload Resume
+
+Upload a candidate resume file and receive a public URL.
+
+```bash POST /upload/resume
+curl -X POST http://localhost:8080/api/upload/resume \
+  -F "file=@/path/to/resume.pdf"
+```
+
+**Request:**
+
+- Content-Type: `multipart/form-data`
+- Form field name: `file`
+- Supported formats: PDF (recommended), DOC, DOCX, TXT
+- Maximum file size: Determined by server configuration (typically 10MB)
+
+**Form Data:**
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `file` | binary | Yes | Resume file to upload |
+
+**cURL Example:**
+
+```bash
+curl -X POST http://localhost:8080/api/upload/resume \
+  -F "file=@john_doe_resume.pdf"
+```
+
+**JavaScript/Fetch Example:**
+
+```javascript
+const formData = new FormData();
+formData.append('file', fileInput.files[0]);
+
+fetch('http://localhost:8080/api/upload/resume', {
+  method: 'POST',
+  body: formData
+})
+  .then(response => response.json())
+  .then(data => {
+    console.log('Resume uploaded:', data.data.url);
+  });
+```
+
+**Response:**
+
+```json
+{
+  "data": {
+    "url": "https://r2.openats.com/resumes/550e8400-e29b-41d4-a716-446655440000.pdf"
+  }
+}
+```
+
+**Response Fields:**
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `data.url` | string | Public URL of the uploaded resume |
+
+---
+
+## Upload Logo
+
+Upload a company logo image and receive a public URL.
+
+```bash POST /upload/logo
+curl -X POST http://localhost:8080/api/upload/logo \
+  -F "file=@/path/to/logo.png"
+```
+
+**Request:**
+
+- Content-Type: `multipart/form-data`
+- Form field name: `file`
+- Supported formats: PNG, JPG, JPEG, SVG, WebP
+- Maximum file size: Determined by server configuration (typically 5MB)
+- Recommended dimensions: 400x400px or similar square/rectangular ratio
+
+**Form Data:**
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `file` | binary | Yes | Logo image file to upload |
+
+**cURL Example:**
+
+```bash
+curl -X POST http://localhost:8080/api/upload/logo \
+  -F "file=@acme_logo.png"
+```
+
+**JavaScript/Fetch Example:**
+
+```javascript
+const formData = new FormData();
+formData.append('file', logoInput.files[0]);
+
+fetch('http://localhost:8080/api/upload/logo', {
+  method: 'POST',
+  body: formData
+})
+  .then(response => response.json())
+  .then(data => {
+    console.log('Logo uploaded:', data.data.url);
+  });
+```
+
+**Response:**
+
+```json
+{
+  "data": {
+    "url": "https://r2.openats.com/logos/7c9e6679-7425-40de-944b-e07fc1f90ae7.png"
+  }
+}
+```
+
+**Response Fields:**
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `data.url` | string | Public URL of the uploaded logo |
+
+---
+
+## File Naming Convention
+
+All uploaded files are automatically renamed using UUID v4 to ensure uniqueness and prevent conflicts:
+
+**Pattern:**
+```
+{folder}/{uuid}{original-extension}
+```
+
+**Examples:**
+- Original: `john_resume.pdf` → Stored as: `resumes/550e8400-e29b-41d4-a716-446655440000.pdf`
+- Original: `company-logo.png` → Stored as: `logos/7c9e6679-7425-40de-944b-e07fc1f90ae7.png`
+
+**Benefits:**
+- Prevents filename conflicts
+- Maintains file extension for proper MIME type handling
+- Obscures original filename for privacy
+- Enables predictable URL structure
+
+---
+
+## Storage Service Implementation
+
+The storage service uses the AWS SDK for S3 to interact with Cloudflare R2:
+
+**Key Features:**
+
+<AccordionGroup>
+  <Accordion title="Automatic Content-Type Detection">
+    The service automatically detects and sets the correct MIME type based on the file extension:
+    - `.pdf` → `application/pdf`
+    - `.png` → `image/png`
+    - `.jpg`, `.jpeg` → `image/jpeg`
+    - `.svg` → `image/svg+xml`
+  </Accordion>
+  
+  <Accordion title="UUID Generation">
+    Files are renamed with UUID v4 identifiers using Node.js `crypto.randomUUID()`:
+    ```javascript
+    const fileName = `${folder}/${crypto.randomUUID()}${fileExt}`;
+    ```
+  </Accordion>
+  
+  <Accordion title="Public URL Construction">
+    URLs are built using the configured R2 public domain:
+    ```javascript
+    const publicUrl = `${process.env.R2_PUBLIC_URL}/${fileName}`;
+    ```
+  </Accordion>
+  
+  <Accordion title="Error Handling">
+    Upload errors are logged with bucket information for debugging:
+    ```javascript
+    console.error(`Attempting upload to Bucket: ${process.env.R2_BUCKET_NAME}`);
+    ```
+  </Accordion>
+</AccordionGroup>
+
+---
+
+## Environment Configuration
+
+The storage service requires the following environment variables:
+
+```bash
+# Cloudflare R2 Configuration
+R2_ENDPOINT=https://your-account-id.r2.cloudflarestorage.com
+R2_ACCESS_KEY_ID=your-access-key-id
+R2_SECRET_ACCESS_KEY=your-secret-access-key
+R2_BUCKET_NAME=openats-storage
+R2_PUBLIC_URL=https://r2.openats.com
+```
+
+**Configuration Details:**
+
+| Variable | Description | Example |
+|----------|-------------|----------|
+| `R2_ENDPOINT` | R2 storage endpoint URL | `https://abc123.r2.cloudflarestorage.com` |
+| `R2_ACCESS_KEY_ID` | R2 access key ID | `your-access-key-id` |
+| `R2_SECRET_ACCESS_KEY` | R2 secret access key | `your-secret-access-key` |
+| `R2_BUCKET_NAME` | Bucket name for storage | `openats-storage` |
+| `R2_PUBLIC_URL` | Public domain for file access | `https://r2.openats.com` |
+
+---
+
+## Integration Examples
+
+### Complete Resume Upload Flow
+
+<Steps>
+  <Step title="Upload Resume">
+    ```bash
+    curl -X POST http://localhost:8080/api/upload/resume \
+      -F "file=@john_doe_resume.pdf"
+    ```
+    
+    Response:
+    ```json
+    {
+      "data": {
+        "url": "https://r2.openats.com/resumes/550e8400.pdf"
+      }
+    }
+    ```
+  </Step>
+  
+  <Step title="Submit Job Application with Resume URL">
+    ```bash
+    curl -X POST http://localhost:8080/api/candidates/jobs/5/apply \
+      -H "Content-Type: application/json" \
+      -d '{
+        "firstName": "John",
+        "lastName": "Doe",
+        "email": "john.doe@example.com",
+        "phone": "+1 555 123 4567",
+        "resumeUrl": "https://r2.openats.com/resumes/550e8400.pdf"
+      }'
+    ```
+  </Step>
+</Steps>
+
+### Complete Logo Upload Flow
+
+<Steps>
+  <Step title="Upload Logo">
+    ```bash
+    curl -X POST http://localhost:8080/api/upload/logo \
+      -F "file=@company_logo.png"
+    ```
+    
+    Response:
+    ```json
+    {
+      "data": {
+        "url": "https://r2.openats.com/logos/7c9e6679.png"
+      }
+    }
+    ```
+  </Step>
+  
+  <Step title="Update Company Profile with Logo URL">
+    ```bash
+    curl -X PUT http://localhost:8080/api/company \
+      -H "Content-Type: application/json" \
+      -d '{
+        "name": "Acme Corp",
+        "website": "https://acme.com",
+        "logoUrl": "https://r2.openats.com/logos/7c9e6679.png"
+      }'
+    ```
+  </Step>
+</Steps>
+
+---
+
+## React Upload Component Example
+
+```jsx
+import { useState } from 'react';
+
+function ResumeUpload() {
+  const [uploading, setUploading] = useState(false);
+  const [url, setUrl] = useState(null);
+  
+  const handleUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    
+    setUploading(true);
+    
+    const formData = new FormData();
+    formData.append('file', file);
+    
+    try {
+      const response = await fetch('http://localhost:8080/api/upload/resume', {
+        method: 'POST',
+        body: formData,
+      });
+      
+      const data = await response.json();
+      setUrl(data.data.url);
+      console.log('Upload successful:', data.data.url);
+    } catch (error) {
+      console.error('Upload failed:', error);
+    } finally {
+      setUploading(false);
+    }
+  };
+  
+  return (
+    <div>
+      <input 
+        type="file" 
+        onChange={handleUpload} 
+        accept=".pdf,.doc,.docx"
+        disabled={uploading}
+      />
+      {uploading && <p>Uploading...</p>}
+      {url && <p>Uploaded to: {url}</p>}
+    </div>
+  );
+}
+```
+
+---
+
+## Error Responses
+
+**Missing File (400):**
+```json
+{
+  "error": "No file provided"
+}
+```
+
+**Invalid File Type (400):**
+```json
+{
+  "error": "Invalid file type. Please upload a PDF, DOC, or DOCX file."
+}
+```
+
+**File Too Large (413):**
+```json
+{
+  "error": "File size exceeds maximum limit of 10MB"
+}
+```
+
+**Upload Failed (500):**
+```json
+{
+  "error": "Failed to upload file to storage"
+}
+```
+
+**Configuration Error (500):**
+```json
+{
+  "error": "Storage service configuration error"
+}
+```
+
+---
+
+## Security Considerations
+
+<Warning>
+**Important Security Notes:**
+
+- Always validate file types on the server side
+- Implement file size limits to prevent abuse
+- Scan uploaded files for malware if handling sensitive data
+- Use signed URLs for private file access (not currently implemented)
+- Consider implementing rate limiting on upload endpoints
+- Never trust client-provided filenames or MIME types
+</Warning>
+
+**Recommended Enhancements:**
+
+1. **Virus Scanning**: Integrate ClamAV or similar before storing files
+2. **File Validation**: Check file headers, not just extensions
+3. **Rate Limiting**: Prevent abuse with upload frequency limits
+4. **Authentication**: Require authentication for uploads (currently not enforced)
+5. **Access Control**: Implement private buckets with signed URLs for sensitive documents
+
+---
+
+## Best Practices
+
+**For Resumes:**
+- Prefer PDF format for consistent rendering
+- Recommend file size under 5MB
+- Validate that the file is actually a PDF (check magic bytes)
+- Consider extracting text for search indexing
+
+**For Logos:**
+- Use PNG or SVG for best quality
+- Recommend square dimensions (e.g., 400x400px)
+- Optimize images before upload to reduce storage costs
+- Consider generating multiple sizes (thumbnail, medium, large)
+
+**General:**
+- Store file metadata (original name, size, upload date) in your database
+- Implement soft delete for uploaded files
+- Set up lifecycle policies to archive or delete old files
+- Monitor storage usage and costs
+- Implement CDN caching for frequently accessed files

@@ -1,0 +1,182 @@
+---
+title: 'Local Development Setup'
+description: 'Get your local development environment up and running'
+---
+
+## Prerequisites
+
+Before you start, make sure you have these installed:
+
+- **Node.js** (version 18 or higher) - [Download here](https://nodejs.org/)
+- **Git** - [Download here](https://git-scm.com/)
+- **PostgreSQL database** (we recommend [Neon](https://neon.tech) — free tier, no local install needed)
+- **A code editor** (VS Code recommended)
+
+Check if you have them:
+
+```bash
+node --version
+git --version
+```
+
+## Initial Setup
+
+### 1. Fork and Clone
+
+Fork the repository on GitHub first, then:
+
+```bash
+git clone https://github.com/chamals3n4/OpenATS.git
+cd OpenATS
+```
+
+### 2. Add Upstream Remote
+
+```bash
+git remote add upstream https://github.com/chamals3n4/OpenATS.git
+git remote -v  # verify you have both origin and upstream
+```
+
+### 3. Install pnpm
+
+```bash
+npm install -g pnpm
+```
+
+### 4. Install Dependencies
+
+Frontend:
+
+```bash
+cd web
+pnpm install
+```
+
+Backend:
+
+```bash
+cd api
+pnpm install
+```
+
+## Environment Variables
+
+### Frontend (web)
+
+Inside the `web` directory, copy the example env file:
+
+```bash
+cd web
+cp .env.example .env
+```
+
+Then open `.env` and fill in the required values for your frontend application.
+
+### Backend (api)
+
+Inside the `api` directory, copy the example env file:
+
+```bash
+cd api
+cp .env.example .env
+```
+
+Then open `.env` and configure the following environment variables:
+
+```bash
+# Database connection
+DATABASE_URL=your_postgresql_connection_string_here
+
+# Cloudflare R2 storage (for resume uploads)
+R2_ENDPOINT=
+R2_ACCESS_KEY_ID=
+R2_SECRET_ACCESS_KEY=
+R2_BUCKET_NAME=
+R2_PUBLIC_URL=
+
+# Email service (Resend)
+RESEND_API_KEY=re_123456789
+RESEND_FROM_EMAIL=onboarding@resend.dev
+```
+
+<Note>
+The `DATABASE_URL` is required for the application to run. Get a free PostgreSQL database from [Neon](https://neon.tech).
+</Note>
+
+## Database Setup
+
+### Run Database Migrations
+
+This creates all the tables in your database:
+
+```bash
+cd api
+pnpm drizzle-kit generate
+pnpm drizzle-kit migrate
+```
+
+### Seed the Database
+
+This inserts the default hiring pipeline stages required for the app to work:
+
+```bash
+pnpm tsx src/db/seed.ts
+```
+
+<Warning>
+You only need to run migrations and seeding **once** when setting up for the first time.
+
+If you ever pull changes that include schema changes, run `pnpm drizzle-kit generate` and `pnpm drizzle-kit migrate` again to keep your database in sync.
+</Warning>
+
+## Running the Project
+
+### Start the Frontend
+
+```bash
+cd web
+pnpm dev
+```
+
+Open [http://localhost:3000](http://localhost:3000) in your browser.
+
+### Start the Backend
+
+```bash
+cd api
+pnpm dev
+```
+
+The API will be available at [http://localhost:5000](http://localhost:5000).
+
+<Tip>
+Run both frontend and backend in separate terminals for the best development experience.
+</Tip>
+
+## Tech Stack
+
+### Frontend (web)
+
+- Next.js
+- TypeScript
+- Tailwind CSS
+- shadcn/ui
+
+### Backend (api)
+
+- Express.js
+- TypeScript
+- Node.js
+- PostgreSQL (Database)
+- Drizzle ORM (Database ORM)
+- WSO2 Asgardeo (Authentication)
+
+### Package Manager
+
+- pnpm
+
+## Next Steps
+
+- Read the [Database Schema](/development/database) documentation
+- Check the [Contributing Guidelines](/development/contributing)
+- Start working on your first issue!

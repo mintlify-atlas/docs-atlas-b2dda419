@@ -1,0 +1,408 @@
+---
+title: Templates
+description: Template management endpoints for creating reusable email and offer letter designs
+---
+
+## Overview
+
+Templates in OpenATS use a block-based design system for creating reusable email and offer letter layouts. Each template consists of content blocks (headings, text, buttons, images, dividers, and spacers) that can be dynamically populated with context variables.
+
+**Template Types:**
+- `offer` - Offer letter templates
+- `rejection` - Candidate rejection emails
+- `assessment_invite` - Assessment invitation emails
+- `general` - General-purpose email templates
+
+---
+
+## List All Templates
+
+Retrieves all templates or filters by type.
+
+<CodeGroup>
+```bash GET /templates
+curl -X GET http://localhost:8080/api/templates \
+  -H "Content-Type: application/json"
+```
+
+```bash Filter by Type
+curl -X GET "http://localhost:8080/api/templates?type=offer" \
+  -H "Content-Type: application/json"
+```
+</CodeGroup>
+
+**Query Parameters:**
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `type` | string | Filter by template type: `offer`, `rejection`, `assessment_invite`, `general` |
+
+**Response:**
+
+```json
+{
+  "data": [
+    {
+      "id": 1,
+      "name": "Standard Engineering Offer",
+      "type": "offer",
+      "subject": "Offer of Employment - {{company_name}}",
+      "bodyJson": [
+        {
+          "type": "heading",
+          "content": "Welcome to {{company_name}}!"
+        },
+        {
+          "type": "text",
+          "content": "Dear {{candidate_name}}, we are pleased to offer you the position of {{job_title}}."
+        },
+        {
+          "type": "button",
+          "label": "Accept Offer",
+          "url": "{{accept_url}}"
+        }
+      ],
+      "createdBy": 1,
+      "createdAt": "2024-03-15T10:30:00Z",
+      "updatedAt": "2024-03-15T10:30:00Z"
+    }
+  ]
+}
+```
+
+---
+
+## Get Template by ID
+
+Retrieve a specific template with all its content blocks.
+
+```bash GET /templates/:id
+curl -X GET http://localhost:8080/api/templates/1 \
+  -H "Content-Type: application/json"
+```
+
+**Path Parameters:**
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `id` | integer | Yes | Template ID |
+
+**Response:**
+
+```json
+{
+  "data": {
+    "id": 1,
+    "name": "Standard Engineering Offer",
+    "type": "offer",
+    "subject": "Offer of Employment - {{company_name}}",
+    "bodyJson": [
+      {
+        "type": "heading",
+        "content": "Welcome to {{company_name}}!"
+      },
+      {
+        "type": "text",
+        "content": "Dear {{candidate_name}}, we are pleased to offer you the position of {{job_title}} with a salary of {{salary}} {{currency}} per {{pay_frequency}}."
+      },
+      {
+        "type": "divider"
+      },
+      {
+        "type": "spacer",
+        "height": 20
+      },
+      {
+        "type": "image",
+        "url": "https://r2.openats.com/logos/company.png",
+        "alt": "Company Logo"
+      },
+      {
+        "type": "button",
+        "label": "Accept Offer",
+        "url": "{{accept_url}}"
+      }
+    ],
+    "createdBy": 1,
+    "createdAt": "2024-03-15T10:30:00Z",
+    "updatedAt": "2024-03-15T10:30:00Z"
+  }
+}
+```
+
+---
+
+## Create Template
+
+Create a new template with a block-based design.
+
+```bash POST /templates
+curl -X POST http://localhost:8080/api/templates \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Senior Engineer Offer",
+    "type": "offer",
+    "subject": "Job Offer - {{job_title}} at {{company_name}}",
+    "bodyJson": [
+      {
+        "type": "heading",
+        "content": "Congratulations!"
+      },
+      {
+        "type": "text",
+        "content": "We are excited to offer you the {{job_title}} position."
+      },
+      {
+        "type": "button",
+        "label": "View Offer Details",
+        "url": "{{offer_url}}"
+      }
+    ],
+    "createdBy": 1
+  }'
+```
+
+**Request Body:**
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `name` | string | Yes | Template name (max 255 characters) |
+| `type` | enum | Yes | Template type: `offer`, `rejection`, `assessment_invite`, `general` |
+| `subject` | string | Yes | Email subject line with optional variables (max 500 characters) |
+| `bodyJson` | array | Yes | Array of content blocks (see Content Blocks below) |
+| `createdBy` | integer | No | User ID (defaults to 1) |
+
+**Content Blocks:**
+
+<Accordion title="Heading Block">
+```json
+{
+  "type": "heading",
+  "content": "Welcome to the Team!"
+}
+```
+</Accordion>
+
+<Accordion title="Text Block">
+```json
+{
+  "type": "text",
+  "content": "Dear {{candidate_name}}, we are pleased to offer you..."
+}
+```
+</Accordion>
+
+<Accordion title="Button Block">
+```json
+{
+  "type": "button",
+  "label": "Accept Offer",
+  "url": "{{accept_url}}"
+}
+```
+</Accordion>
+
+<Accordion title="Image Block">
+```json
+{
+  "type": "image",
+  "url": "https://r2.openats.com/logos/company.png",
+  "alt": "Company Logo"
+}
+```
+</Accordion>
+
+<Accordion title="Divider Block">
+```json
+{
+  "type": "divider"
+}
+```
+</Accordion>
+
+<Accordion title="Spacer Block">
+```json
+{
+  "type": "spacer",
+  "height": 30
+}
+```
+</Accordion>
+
+**Response:**
+
+```json
+{
+  "data": {
+    "id": 2,
+    "name": "Senior Engineer Offer",
+    "type": "offer",
+    "subject": "Job Offer - {{job_title}} at {{company_name}}",
+    "bodyJson": [
+      {
+        "type": "heading",
+        "content": "Congratulations!"
+      },
+      {
+        "type": "text",
+        "content": "We are excited to offer you the {{job_title}} position."
+      },
+      {
+        "type": "button",
+        "label": "View Offer Details",
+        "url": "{{offer_url}}"
+      }
+    ],
+    "createdBy": 1,
+    "createdAt": "2024-03-16T14:20:00Z",
+    "updatedAt": "2024-03-16T14:20:00Z"
+  }
+}
+```
+
+---
+
+## Update Template
+
+Update an existing template's properties or content blocks.
+
+```bash PUT /templates/:id
+curl -X PUT http://localhost:8080/api/templates/2 \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Updated Senior Engineer Offer",
+    "subject": "Exciting Opportunity - {{job_title}} at {{company_name}}"
+  }'
+```
+
+**Path Parameters:**
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `id` | integer | Yes | Template ID |
+
+**Request Body:**
+
+All fields are optional. Only include fields you want to update.
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `name` | string | Template name (max 255 characters) |
+| `type` | enum | Template type: `offer`, `rejection`, `assessment_invite`, `general` |
+| `subject` | string | Email subject line (max 500 characters) |
+| `bodyJson` | array | Array of content blocks |
+
+**Response:**
+
+```json
+{
+  "data": {
+    "id": 2,
+    "name": "Updated Senior Engineer Offer",
+    "type": "offer",
+    "subject": "Exciting Opportunity - {{job_title}} at {{company_name}}",
+    "bodyJson": [...],
+    "createdBy": 1,
+    "createdAt": "2024-03-16T14:20:00Z",
+    "updatedAt": "2024-03-16T15:30:00Z"
+  }
+}
+```
+
+---
+
+## Delete Template
+
+Permanently delete a template.
+
+```bash DELETE /templates/:id
+curl -X DELETE http://localhost:8080/api/templates/2 \
+  -H "Content-Type: application/json"
+```
+
+**Path Parameters:**
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `id` | integer | Yes | Template ID |
+
+**Response:**
+
+```json
+{
+  "data": {
+    "id": 2,
+    "name": "Updated Senior Engineer Offer",
+    "type": "offer",
+    "subject": "Exciting Opportunity - {{job_title}} at {{company_name}}",
+    "deletedAt": "2024-03-16T16:00:00Z"
+  }
+}
+```
+
+---
+
+## Preview Template
+
+Render a template with sample data to see the final HTML output.
+
+```bash POST /templates/:id/preview
+curl -X POST http://localhost:8080/api/templates/1/preview \
+  -H "Content-Type: application/json" \
+  -d '{
+    "context": {
+      "candidate_name": "John Doe",
+      "company_name": "Acme Corp",
+      "job_title": "Senior Backend Engineer",
+      "salary": "150000",
+      "currency": "USD",
+      "pay_frequency": "yearly",
+      "accept_url": "https://app.openats.com/offers/accept/abc123"
+    }
+  }'
+```
+
+**Path Parameters:**
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `id` | integer | Yes | Template ID |
+
+**Request Body:**
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `context` | object | No | Key-value pairs for variable substitution (e.g., `{{candidate_name}}` → `"John Doe"`) |
+
+**Response:**
+
+```json
+{
+  "data": {
+    "subject": "Offer of Employment - Acme Corp",
+    "html": "<div class='template'><h1>Welcome to Acme Corp!</h1><p>Dear John Doe, we are pleased to offer you the position of Senior Backend Engineer with a salary of 150000 USD per yearly.</p><a href='https://app.openats.com/offers/accept/abc123' class='button'>Accept Offer</a></div>"
+  }
+}
+```
+
+---
+
+## Common Template Variables
+
+These variables can be used in `subject` and content block strings:
+
+| Variable | Description | Example |
+|----------|-------------|----------|
+| `{{candidate_name}}` | Full candidate name | "John Doe" |
+| `{{first_name}}` | Candidate first name | "John" |
+| `{{last_name}}` | Candidate last name | "Doe" |
+| `{{company_name}}` | Company name | "Acme Corp" |
+| `{{job_title}}` | Job position title | "Senior Backend Engineer" |
+| `{{salary}}` | Offer salary amount | "150000" |
+| `{{currency}}` | Currency code | "USD" |
+| `{{pay_frequency}}` | Payment frequency | "yearly" |
+| `{{start_date}}` | Employment start date | "2024-04-01" |
+| `{{offer_url}}` | Link to full offer details | "https://app.openats.com/offers/abc123" |
+| `{{accept_url}}` | Link to accept offer | "https://app.openats.com/offers/accept/abc123" |
+| `{{assessment_url}}` | Link to take assessment | "https://app.openats.com/assess/xyz789" |
+| `{{expiry_date}}` | Offer expiration date | "2024-03-30" |

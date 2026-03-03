@@ -1,0 +1,243 @@
+---
+title: 'Pipeline Management'
+description: 'Manage custom hiring stages for job openings'
+---
+
+## Overview
+
+Pipeline endpoints allow you to create, update, and manage custom hiring stages for each job opening. Each job can have its own pipeline with stages like "Initial Screening", "Technical Interview", "Offer", etc.
+
+---
+
+## Get Job Pipeline
+
+<CodeGroup>
+```bash GET /jobs/{jobId}/pipeline
+curl -X GET http://localhost:8080/api/jobs/1/pipeline
+```
+</CodeGroup>
+
+Retrieve all hiring stages configured for a specific job opening.
+
+### Path Parameters
+
+<ParamField path="jobId" type="integer" required>
+  The unique identifier of the job
+</ParamField>
+
+### Response
+
+```json
+{
+  "data": [
+    {
+      "id": 1,
+      "jobId": 1,
+      "name": "Initial Screening",
+      "position": 1,
+      "stageType": "source",
+      "offerTemplateId": null,
+      "offerMode": null,
+      "offerExpiryDays": null,
+      "rejectionTemplateId": null
+    },
+    {
+      "id": 2,
+      "jobId": 1,
+      "name": "Technical Assessment",
+      "position": 2,
+      "stageType": "assessment",
+      "offerTemplateId": null,
+      "offerMode": null,
+      "offerExpiryDays": null,
+      "rejectionTemplateId": null
+    }
+  ]
+}
+```
+
+---
+
+## Create Pipeline Stage
+
+<CodeGroup>
+```bash POST /jobs/{jobId}/pipeline
+curl -X POST http://localhost:8080/api/jobs/1/pipeline \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Initial Screening",
+    "position": 2,
+    "stageType": "source"
+  }'
+```
+</CodeGroup>
+
+Create a new custom stage in the job's hiring pipeline.
+
+### Path Parameters
+
+<ParamField path="jobId" type="integer" required>
+  The unique identifier of the job
+</ParamField>
+
+### Body Parameters
+
+<ParamField body="name" type="string" required>
+  Name of the pipeline stage (max 100 characters)
+</ParamField>
+
+<ParamField body="position" type="integer" required>
+  Position/order of the stage in the pipeline (must be positive)
+</ParamField>
+
+<ParamField body="stageType" type="string" default="none">
+  Type of stage. Options: `none`, `source`, `assessment`, `interview`, `offer`, `rejection`
+</ParamField>
+
+<ParamField body="offerTemplateId" type="integer">
+  Template ID to use when auto-generating offers at this stage
+</ParamField>
+
+<ParamField body="offerMode" type="string">
+  Offer automation mode. Options: `auto_draft`, `auto_send`
+</ParamField>
+
+### Response
+
+```json
+{
+  "data": {
+    "id": 3,
+    "jobId": 1,
+    "name": "Initial Screening",
+    "position": 2,
+    "stageType": "source",
+    "offerTemplateId": null,
+    "offerMode": null,
+    "offerExpiryDays": null,
+    "rejectionTemplateId": null
+  }
+}
+```
+
+---
+
+## Update Pipeline Stage
+
+<CodeGroup>
+```bash PUT /jobs/{jobId}/pipeline/{stageId}
+curl -X PUT http://localhost:8080/api/jobs/1/pipeline/3 \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Phone Screening",
+    "position": 1,
+    "stageType": "interview"
+  }'
+```
+</CodeGroup>
+
+Update an existing pipeline stage configuration.
+
+### Path Parameters
+
+<ParamField path="jobId" type="integer" required>
+  The unique identifier of the job
+</ParamField>
+
+<ParamField path="stageId" type="integer" required>
+  The unique identifier of the pipeline stage
+</ParamField>
+
+### Body Parameters
+
+<ParamField body="name" type="string">
+  Updated name for the stage (max 100 characters)
+</ParamField>
+
+<ParamField body="position" type="integer">
+  Updated position in the pipeline
+</ParamField>
+
+<ParamField body="stageType" type="string">
+  Updated stage type. Options: `none`, `source`, `assessment`, `interview`, `offer`, `rejection`
+</ParamField>
+
+<ParamField body="offerTemplateId" type="integer">
+  Template to use for offer generation
+</ParamField>
+
+<ParamField body="offerMode" type="string">
+  Offer automation mode. Options: `auto_draft`, `auto_send`
+</ParamField>
+
+<ParamField body="offerExpiryDays" type="integer">
+  Number of days until auto-generated offers expire
+</ParamField>
+
+<ParamField body="rejectionTemplateId" type="integer">
+  Email template to use for rejection notifications
+</ParamField>
+
+### Response
+
+```json
+{
+  "data": {
+    "id": 3,
+    "jobId": 1,
+    "name": "Phone Screening",
+    "position": 1,
+    "stageType": "interview",
+    "offerTemplateId": null,
+    "offerMode": null,
+    "offerExpiryDays": null,
+    "rejectionTemplateId": null
+  }
+}
+```
+
+---
+
+## Delete Pipeline Stage
+
+<CodeGroup>
+```bash DELETE /jobs/{jobId}/pipeline/{stageId}
+curl -X DELETE http://localhost:8080/api/jobs/1/pipeline/3
+```
+</CodeGroup>
+
+Remove a stage from the job's pipeline. Cannot delete stages that have candidate history.
+
+### Path Parameters
+
+<ParamField path="jobId" type="integer" required>
+  The unique identifier of the job
+</ParamField>
+
+<ParamField path="stageId" type="integer" required>
+  The unique identifier of the pipeline stage to delete
+</ParamField>
+
+### Response
+
+```json
+{
+  "data": {
+    "id": 3,
+    "jobId": 1,
+    "name": "Phone Screening",
+    "position": 1,
+    "stageType": "interview"
+  }
+}
+```
+
+### Error Responses
+
+<ResponseField name="409 Conflict">
+  Returned when attempting to delete a stage that has candidate history. Move candidates to another stage first.
+</ResponseField>
+
+<ResponseField name="404 Not Found">
+  Stage or job not found
+</ResponseField>

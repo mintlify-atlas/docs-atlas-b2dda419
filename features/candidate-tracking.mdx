@@ -1,0 +1,311 @@
+---
+title: Candidate Tracking
+description: Track and manage candidate applications throughout your hiring process
+icon: user-check
+---
+
+## Overview
+
+Candidate Tracking in OpenATS provides a complete view of every applicant's journey through your hiring pipeline. From initial application to final decision, maintain organized records and collaborate with your hiring team.
+
+## Candidate Applications
+
+### Application Submission
+
+Candidates apply to jobs by providing:
+
+<CardGroup cols={2}>
+  <Card title="Contact Information" icon="address-card">
+    **Required:** First name, last name, email
+    
+    **Optional:** Phone number
+  </Card>
+  <Card title="Resume/CV" icon="file-pdf">
+    Upload resumes stored securely in Cloudflare R2
+    
+    Automatically parsed for skills matching
+  </Card>
+  <Card title="Custom Answers" icon="clipboard-question">
+    Responses to job-specific screening questions
+    
+    Both text and multiple-choice formats
+  </Card>
+  <Card title="Application Time" icon="clock">
+    Timestamp of submission for tracking
+    
+    Used for time-to-hire metrics
+  </Card>
+</CardGroup>
+
+<Note>
+  Each candidate is automatically assigned to the first stage of the job's pipeline upon application.
+</Note>
+
+### CV Analysis & Scoring
+
+OpenATS automatically analyzes uploaded resumes to:
+
+<Steps>
+  <Step title="Extract text content">
+    Parse resume files to extract structured information
+  </Step>
+  <Step title="Match against job requirements">
+    Compare extracted skills with the job's required skills list
+  </Step>
+  <Step title="Calculate match score">
+    Generate a percentage match score (0-100)
+  </Step>
+  <Step title="Identify gaps">
+    List matched skills and missing skills
+  </Step>
+</Steps>
+
+<Tip>
+  The CV match score helps you quickly identify candidates who meet your technical requirements, but should be used alongside other evaluation criteria.
+</Tip>
+
+#### Analysis Status
+
+CV analysis can be in one of several states:
+
+- **Pending**: Analysis queued but not started
+- **Processing**: Currently analyzing the resume
+- **Completed**: Analysis finished successfully
+- **Failed**: Error occurred during analysis
+
+<Warning>
+  If CV analysis fails, the error message is stored for debugging. Common issues include unsupported file formats or corrupted uploads.
+</Warning>
+
+## Viewing Candidates
+
+### Candidate List
+
+View all candidates for a specific job with filtering options:
+
+**Filter by Pipeline Stage**
+```
+Show only candidates in "Technical Interview" stage
+```
+
+**Search by Name or Email**
+```
+Quickly find specific candidates across all stages
+```
+
+### Candidate Profile
+
+Each candidate profile displays:
+
+<Tabs>
+  <Tab title="Basic Info">
+    - Full name and contact details
+    - Application date
+    - Current pipeline stage
+    - Resume download link
+  </Tab>
+  <Tab title="CV Analysis">
+    - Match score with visual indicator
+    - List of matched skills (green)
+    - List of missing skills (yellow)
+    - Extracted text preview
+  </Tab>
+  <Tab title="Custom Answers">
+    - Responses to application questions
+    - Both text answers and selected options
+    - Question order as configured on job
+  </Tab>
+  <Tab title="Stage History">
+    - Complete timeline of stage movements
+    - Who moved the candidate and when
+    - Audit trail for compliance
+  </Tab>
+  <Tab title="Assessment Results">
+    - Technical assessment attempts
+    - Scores and pass/fail status
+    - Individual question responses
+  </Tab>
+</Tabs>
+
+## Managing Candidate Progress
+
+### Moving Between Stages
+
+Advance or move back candidates through your pipeline:
+
+<Steps>
+  <Step title="Select target stage">
+    Choose any stage in the job's pipeline
+  </Step>
+  <Step title="Confirm move">
+    System records who moved the candidate and when
+  </Step>
+  <Step title="View updated status">
+    Candidate appears in new stage immediately
+  </Step>
+  <Step title="Check stage history">
+    Full audit trail preserved in stage history
+  </Step>
+</Steps>
+
+<Note>
+  Stage movements are recorded with timestamps and user attribution for complete transparency and compliance.
+</Note>
+
+### Automated Stage Actions
+
+Certain stages can trigger automated actions:
+
+**Assessment Trigger**
+- Moving to an assessment-enabled stage sends test invitation
+- Candidate receives unique assessment link
+- Link expires based on configured time limit
+
+**Offer Generation**
+- Moving to an offer stage can auto-generate offer letter
+- Uses configured template and job salary information
+- Draft created for review before sending
+
+**Rejection Emails**
+- Moving to rejection stage can send automated notification
+- Uses configured rejection template
+- Personalizable before sending
+
+## Custom Application Questions
+
+### Question Types
+
+Jobs can include custom screening questions in two formats:
+
+<CardGroup cols={2}>
+  <Card title="Short Answer" icon="text">
+    Open-ended text responses for:
+    - "Why do you want this role?"
+    - "Describe your experience with..."
+    - Portfolio links or references
+  </Card>
+  <Card title="Multiple Choice" icon="list-check">
+    Predefined options for:
+    - Work authorization questions
+    - Availability preferences
+    - Qualification confirmations
+  </Card>
+</CardGroup>
+
+### Viewing Candidate Answers
+
+Custom answers appear in the candidate profile with:
+- The question text as asked
+- The candidate's response(s)
+- For multiple choice: all selected options
+- For required questions: clearly marked if unanswered
+
+<Tip>
+  Mark critical screening questions as "required" to ensure you collect essential information from every candidate.
+</Tip>
+
+## Stage History & Audit Trail
+
+Every time a candidate moves between pipeline stages, OpenATS records:
+
+<Steps>
+  <Step title="Previous Stage">
+    Where the candidate was before
+  </Step>
+  <Step title="New Stage">
+    Where the candidate moved to
+  </Step>
+  <Step title="Who Made the Change">
+    User who performed the action
+  </Step>
+  <Step title="When It Happened">
+    Precise timestamp of the movement
+  </Step>
+</Steps>
+
+This creates a complete, immutable audit trail for:
+- Internal process reviews
+- Compliance requirements
+- Candidate experience analysis
+- Time-to-hire metrics
+
+## Candidate Removal
+
+<Warning>
+  Deleting a candidate permanently removes all associated data including:
+  - Application information
+  - Custom question responses
+  - Assessment attempts and answers
+  - CV analysis results
+  - Stage history
+  
+  This action cannot be undone.
+</Warning>
+
+Instead of deletion, consider:
+- Moving to a "Rejected" or "Archived" stage
+- Using pipeline stages to maintain historical records
+- Closing the job if no longer hiring
+
+## Data Storage & Security
+
+### Resume Storage
+
+Candidate resumes are stored in Cloudflare R2 with:
+- Secure, encrypted storage
+- CDN delivery for fast access
+- Unique URLs per candidate
+- Access control and permissions
+
+### Personal Data
+
+Candidate information includes personal data subject to:
+- GDPR and privacy regulations
+- Data retention policies
+- Right to deletion requests
+- Access control requirements
+
+<Note>
+  Consult your organization's data retention and privacy policies when managing candidate information.
+</Note>
+
+## Best Practices
+
+<AccordionGroup>
+  <Accordion title="Review candidates promptly">
+    Set SLAs for reviewing new applications to improve candidate experience and reduce time-to-hire.
+  </Accordion>
+  
+  <Accordion title="Use stage history for insights">
+    Analyze where candidates get stuck in your pipeline to identify process bottlenecks.
+  </Accordion>
+  
+  <Accordion title="Leverage CV matching wisely">
+    Use match scores as a initial filter, but don't rely solely on automated scoring for hiring decisions.
+  </Accordion>
+  
+  <Accordion title="Keep candidates informed">
+    Use automated emails when moving candidates to key stages to maintain engagement.
+  </Accordion>
+  
+  <Accordion title="Document decisions">
+    Add notes when moving candidates between stages to help team members understand context.
+  </Accordion>
+</AccordionGroup>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Configure Pipeline Stages" icon="diagram-project" href="/features/pipeline-stages">
+    Customize your hiring workflow
+  </Card>
+  <Card title="Set Up Assessments" icon="clipboard-check" href="/features/assessments">
+    Create technical screening tests
+  </Card>
+  <Card title="Create Offer Templates" icon="file-contract" href="/features/offers">
+    Prepare offer letter templates
+  </Card>
+  <Card title="Build Email Templates" icon="envelope" href="/features/templates">
+    Design candidate communications
+  </Card>
+</CardGroup>

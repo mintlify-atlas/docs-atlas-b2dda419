@@ -1,0 +1,315 @@
+---
+title: 'Assessment Execution'
+description: 'Candidate-facing endpoints for taking tests and grading'
+---
+
+## Overview
+
+Assessment Execution endpoints handle the candidate experience of taking tests, including starting assessments, submitting answers, and automatic grading. These endpoints use token-based authentication for public access.
+
+---
+
+## Invite Candidate to Assessment
+
+<CodeGroup>
+```bash POST /assessment-execution/invite
+curl -X POST http://localhost:8080/api/assessment-execution/invite \
+  -H "Content-Type: application/json" \
+  -d '{
+    "candidateId": 15,
+    "assessmentId": 3,
+    "expiryDays": 7
+  }'
+```
+</CodeGroup>
+
+Manually invite a candidate to take an assessment. Generates a unique token and expiry date.
+
+### Body Parameters
+
+<ParamField body="candidateId" type="integer" required>
+  The unique identifier of the candidate
+</ParamField>
+
+<ParamField body="assessmentId" type="integer" required>
+  The unique identifier of the assessment to send
+</ParamField>
+
+<ParamField body="expiryDays" type="integer" default="7">
+  Number of days until the assessment link expires
+</ParamField>
+
+### Response
+
+```json
+{
+  "data": {
+    "id": 42,
+    "candidateId": 15,
+    "assessmentId": 3,
+    "token": "a3f9b2c8-4d1e-4f6a-9c8b-1e2d3f4a5b6c",
+    "status": "pending",
+    "expiresAt": "2024-01-27T10:00:00Z",
+    "startedAt": null,
+    "completedAt": null,
+    "scorePercentage": null,
+    "passed": null
+  }
+}
+```
+
+---
+
+## Get Candidate Assessment Attempts
+
+<CodeGroup>
+```bash GET /assessment-execution/candidate/{candidateId}
+curl -X GET http://localhost:8080/api/assessment-execution/candidate/15
+```
+</CodeGroup>
+
+Retrieve all assessment attempts for a specific candidate.
+
+### Path Parameters
+
+<ParamField path="candidateId" type="integer" required>
+  The unique identifier of the candidate
+</ParamField>
+
+### Response
+
+```json
+{
+  "data": [
+    {
+      "id": 42,
+      "candidateId": 15,
+      "assessmentId": 3,
+      "token": "a3f9b2c8-4d1e-4f6a-9c8b-1e2d3f4a5b6c",
+      "status": "completed",
+      "expiresAt": "2024-01-27T10:00:00Z",
+      "startedAt": "2024-01-20T14:30:00Z",
+      "completedAt": "2024-01-20T15:15:00Z",
+      "scorePercentage": 85,
+      "passed": true,
+      "assessment": {
+        "id": 3,
+        "title": "Backend Node.js Assessment",
+        "timeLimit": 60,
+        "passScore": 70
+      }
+    }
+  ]
+}
+```
+
+---
+
+## Get Assessment for Candidate (Public)
+
+<CodeGroup>
+```bash GET /assessment-execution/public/{token}
+curl -X GET http://localhost:8080/api/assessment-execution/public/a3f9b2c8-4d1e-4f6a-9c8b-1e2d3f4a5b6c
+```
+</CodeGroup>
+
+Public endpoint for candidates to fetch assessment details using their unique token from the email invite.
+
+### Path Parameters
+
+<ParamField path="token" type="string" required>
+  The unique token from the assessment invitation email
+</ParamField>
+
+### Response
+
+```json
+{
+  "data": {
+    "id": 42,
+    "status": "pending",
+    "expiresAt": "2024-01-27T10:00:00Z",
+    "assessment": {
+      "id": 3,
+      "title": "Backend Node.js Assessment",
+      "description": "Technical screening for backend developers",
+      "timeLimit": 60,
+      "passScore": 70,
+      "questions": [
+        {
+          "id": 1,
+          "title": "Which of the following are Node.js core modules?",
+          "description": null,
+          "questionType": "multiple_choice",
+          "points": 1,
+          "position": 1,
+          "options": [
+            {"id": 1, "label": "fs", "position": 1},
+            {"id": 2, "label": "express", "position": 2}
+          ]
+        }
+      ]
+    }
+  }
+}
+```
+
+### Error Responses
+
+<ResponseField name="410 Gone">
+  Assessment link has expired
+</ResponseField>
+
+<ResponseField name="404 Not Found">
+  Invalid token or assessment attempt not found
+</ResponseField>
+
+---
+
+## Start Assessment (Public)
+
+<CodeGroup>
+```bash POST /assessment-execution/public/{token}/start
+curl -X POST http://localhost:8080/api/assessment-execution/public/a3f9b2c8-4d1e-4f6a-9c8b-1e2d3f4a5b6c/start
+```
+</CodeGroup>
+
+Mark the assessment as started and begin the timer. Can only be called when status is `pending`.
+
+### Path Parameters
+
+<ParamField path="token" type="string" required>
+  The unique token from the assessment invitation
+</ParamField>
+
+### Response
+
+```json
+{
+  "data": {
+    "id": 42,
+    "status": "started",
+    "startedAt": "2024-01-20T14:30:00Z",
+    "expiresAt": "2024-01-27T10:00:00Z"
+  }
+}
+```
+
+### Error Responses
+
+<ResponseField name="400 Bad Request">
+  Cannot start an assessment that is already started or completed
+</ResponseField>
+
+---
+
+## Submit Answer (Public)
+
+<CodeGroup>
+```bash POST /assessment-execution/public/{token}/answer
+curl -X POST http://localhost:8080/api/assessment-execution/public/a3f9b2c8-4d1e-4f6a-9c8b-1e2d3f4a5b6c/answer \
+  -H "Content-Type: application/json" \
+  -d '{
+    "questionId": 1,
+    "optionIds": [1, 3]
+  }'
+```
+</CodeGroup>
+
+Save or update a candidate's answer for a specific question. Can be called multiple times for the same question to update the answer.
+
+### Path Parameters
+
+<ParamField path="token" type="string" required>
+  The unique token from the assessment invitation
+</ParamField>
+
+### Body Parameters
+
+<ParamField body="questionId" type="integer" required>
+  The unique identifier of the question being answered
+</ParamField>
+
+<ParamField body="answerText" type="string">
+  Text answer for `short_answer` questions
+</ParamField>
+
+<ParamField body="optionIds" type="array">
+  Array of selected option IDs for `multiple_choice` questions
+</ParamField>
+
+### Response
+
+```json
+{
+  "data": {
+    "id": 101,
+    "attemptId": 42,
+    "questionId": 1,
+    "answerText": null,
+    "optionIds": [1, 3],
+    "isCorrect": true,
+    "pointsAwarded": 1
+  }
+}
+```
+
+### Error Responses
+
+<ResponseField name="403 Forbidden">
+  Assessment must be in 'started' state to submit answers
+</ResponseField>
+
+---
+
+## Complete Assessment (Public)
+
+<CodeGroup>
+```bash POST /assessment-execution/public/{token}/complete
+curl -X POST http://localhost:8080/api/assessment-execution/public/a3f9b2c8-4d1e-4f6a-9c8b-1e2d3f4a5b6c/complete
+```
+</CodeGroup>
+
+Finalize the assessment, stop the timer, and calculate the final score. Automatically grades all answers.
+
+### Path Parameters
+
+<ParamField path="token" type="string" required>
+  The unique token from the assessment invitation
+</ParamField>
+
+### Response
+
+```json
+{
+  "message": "Assessment completed successfully",
+  "data": {
+    "passed": true,
+    "scorePercentage": 85
+  }
+}
+```
+
+### Error Responses
+
+<ResponseField name="400 Bad Request">
+  Only started assessments can be completed
+</ResponseField>
+
+---
+
+## Assessment Status Flow
+
+Assessments follow a specific status lifecycle:
+
+1. **pending** - Invitation sent, assessment not yet started
+2. **started** - Candidate has begun the assessment (timer running)
+3. **completed** - Assessment submitted and graded
+
+Transitions:
+- `pending` → `started` via `/start` endpoint
+- `started` → `completed` via `/complete` endpoint
+
+<Note>
+  Answers can only be submitted when the assessment is in `started` status. Once an assessment is `completed`, no further changes can be made.
+</Note>

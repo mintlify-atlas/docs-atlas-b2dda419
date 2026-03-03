@@ -1,0 +1,154 @@
+---
+title: 'API Overview'
+description: 'Learn about the OpenATS API structure, base URL, and response formats'
+---
+
+## Welcome to the OpenATS API
+
+The OpenATS API is a comprehensive RESTful API that powers the OpenATS Applicant Tracking System. It handles everything from job creation and candidate management to technical assessments and offer generation.
+
+## Base URL
+
+All API requests should be made to:
+
+```
+http://localhost:8080/api
+```
+
+<Note>
+  The base URL above is for local development. In production, replace `localhost:8080` with your deployed API server address.
+</Note>
+
+## API Version
+
+The current API version is **1.0.0**.
+
+## Request Format
+
+All requests to the API should:
+- Use HTTPS in production (HTTP for local development)
+- Include the `Content-Type: application/json` header for POST/PUT requests
+- Send request bodies in JSON format
+
+### Example Request
+
+```bash
+curl -X GET http://localhost:8080/api/company \
+  -H "Content-Type: application/json"
+```
+
+## Response Format
+
+The API returns responses in JSON format. Successful responses typically include a `data` field containing the requested information.
+
+### Success Response
+
+```json
+{
+  "data": {
+    "id": 1,
+    "name": "Acme Corp",
+    "website": "https://acme.com",
+    "logoUrl": "https://r2.openats.com/logos/acme.png"
+  }
+}
+```
+
+### HTTP Status Codes
+
+The API uses standard HTTP status codes:
+
+| Status Code | Description |
+|------------|-------------|
+| `200` | Success - Request completed successfully |
+| `201` | Created - Resource created successfully |
+| `400` | Bad Request - Invalid request parameters |
+| `401` | Unauthorized - Authentication required |
+| `404` | Not Found - Resource doesn't exist |
+| `500` | Internal Server Error - Something went wrong on the server |
+
+## Error Handling
+
+When an error occurs, the API returns an error response with an appropriate HTTP status code and error message.
+
+### Error Response Format
+
+```json
+{
+  "error": "Internal server error"
+}
+```
+
+### Example Error Response
+
+```bash
+curl -X GET http://localhost:8080/api/invalid-endpoint
+```
+
+Response:
+```json
+{
+  "error": "Internal server error"
+}
+```
+
+## API Features
+
+The OpenATS API is organized into the following categories:
+
+<CardGroup cols={2}>
+  <Card title="Company" icon="building" href="/api/company">
+    Manage company profile, branding, and departments
+  </Card>
+  <Card title="Users" icon="users" href="/api/users">
+    Handle team members, roles, and profiles
+  </Card>
+  <Card title="Jobs" icon="briefcase" href="/api/jobs">
+    Create and manage job postings
+  </Card>
+  <Card title="Candidates" icon="user" href="/api/candidates">
+    Track candidate applications and pipeline movement
+  </Card>
+  <Card title="Assessments" icon="clipboard-check" href="/api/assessments">
+    Create technical tests and questions
+  </Card>
+  <Card title="Templates" icon="file-lines" href="/api/templates">
+    Design reusable email and document templates
+  </Card>
+</CardGroup>
+
+## Health Check
+
+You can verify the API is running by calling the health endpoint:
+
+```bash
+curl http://localhost:8080/health
+```
+
+Response:
+```json
+{
+  "status": "working"
+}
+```
+
+## Interactive API Documentation
+
+OpenATS also provides interactive API documentation using Swagger UI. When running the API server locally, visit:
+
+```
+http://localhost:8080/api-docs
+```
+
+This interface allows you to explore all endpoints, view request/response schemas, and test API calls directly from your browser.
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Authentication" icon="lock" href="/api/authentication">
+    Learn how to authenticate your API requests
+  </Card>
+  <Card title="Core Endpoints" icon="code" href="/api/company">
+    Start making API calls to core endpoints
+  </Card>
+</CardGroup>

@@ -1,0 +1,468 @@
+---
+title: 'Jobs'
+description: 'Core job postings, salary details, and recruitment settings'
+---
+
+## List All Job Openings
+
+<CodeGroup>
+```http
+GET /jobs
+```
+</CodeGroup>
+
+Returns all jobs with basic details.
+
+### Response
+
+<ResponseField name="data" type="array">
+  Array of job objects
+  
+  <Expandable title="job properties">
+    <ResponseField name="id" type="integer">
+      Job identifier
+    </ResponseField>
+    
+    <ResponseField name="title" type="string">
+      Job title
+    </ResponseField>
+    
+    <ResponseField name="departmentId" type="integer">
+      Associated department ID
+    </ResponseField>
+    
+    <ResponseField name="status" type="string">
+      Job status: `draft`, `inactive`, `published`, `closed`, or `archived`
+    </ResponseField>
+    
+    <ResponseField name="employmentType" type="string">
+      Employment type: `full_time`, `part_time`, `contract`, `internship`, or `freelance`
+    </ResponseField>
+    
+    <ResponseField name="location" type="string" optional>
+      Job location
+    </ResponseField>
+    
+    <ResponseField name="slug" type="string">
+      URL-friendly slug for public job page
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+### Example Request
+
+```bash
+curl -X GET http://localhost:8080/api/jobs
+```
+
+### Error Codes
+
+<ResponseField name="500" type="error">
+  Failed to fetch jobs
+</ResponseField>
+
+---
+
+## Create Job Opening
+
+<CodeGroup>
+```http
+POST /jobs
+```
+</CodeGroup>
+
+Create a new job opening in the system.
+
+### Request Body
+
+<ParamField body="title" type="string" required>
+  Job title (1-255 characters)
+</ParamField>
+
+<ParamField body="departmentId" type="integer" required>
+  Department ID this job belongs to
+</ParamField>
+
+<ParamField body="employmentType" type="string" required>
+  Employment type: `full_time`, `part_time`, `contract`, `internship`, or `freelance`
+</ParamField>
+
+<ParamField body="location" type="string" optional>
+  Job location (max 255 characters)
+</ParamField>
+
+<ParamField body="description" type="string" optional>
+  Detailed job description
+</ParamField>
+
+<ParamField body="skills" type="array" optional>
+  Array of required skills (each 1-100 characters)
+</ParamField>
+
+<ParamField body="salaryType" type="string" optional>
+  Salary structure: `fixed` or `range`
+</ParamField>
+
+<ParamField body="currency" type="string" optional>
+  3-letter ISO currency code (e.g., USD)
+</ParamField>
+
+<ParamField body="payFrequency" type="string" optional>
+  Pay frequency: `hourly`, `daily`, `weekly`, `monthly`, or `yearly`
+</ParamField>
+
+<ParamField body="salaryMin" type="number" optional>
+  Minimum salary (required if salaryType is `range`)
+</ParamField>
+
+<ParamField body="salaryMax" type="number" optional>
+  Maximum salary (required if salaryType is `range`)
+</ParamField>
+
+<ParamField body="salaryFixed" type="number" optional>
+  Fixed salary amount (required if salaryType is `fixed`)
+</ParamField>
+
+<ParamField body="createdBy" type="integer" optional>
+  User ID of creator (defaults to 1)
+</ParamField>
+
+### Response
+
+<ResponseField name="data" type="object">
+  Created job object
+</ResponseField>
+
+### Example Request
+
+```bash
+curl -X POST http://localhost:8080/api/jobs \
+  -H "Content-Type: application/json" \
+  -d '{
+    "title": "Senior Backend Engineer",
+    "departmentId": 1,
+    "employmentType": "full_time",
+    "location": "San Francisco, CA (Remote)",
+    "description": "We are looking for...",
+    "skills": ["Node.js", "PostgreSQL", "Drizzle"],
+    "salaryType": "range",
+    "currency": "USD",
+    "payFrequency": "yearly",
+    "salaryMin": 120000,
+    "salaryMax": 180000
+  }'
+```
+
+### Error Codes
+
+<ResponseField name="400" type="error">
+  Validation failed OR Department not found OR Invalid salary configuration
+</ResponseField>
+
+<ResponseField name="500" type="error">
+  Failed to create job
+</ResponseField>
+
+---
+
+## Get Job Details
+
+<CodeGroup>
+```http
+GET /jobs/{id}
+```
+</CodeGroup>
+
+Retrieve full details for a specific job opening.
+
+### Path Parameters
+
+<ParamField path="id" type="integer" required>
+  Job ID
+</ParamField>
+
+### Response
+
+<ResponseField name="data" type="object">
+  Complete job object with all fields
+  
+  <Expandable title="properties">
+    <ResponseField name="id" type="integer">
+      Job identifier
+    </ResponseField>
+    
+    <ResponseField name="title" type="string">
+      Job title
+    </ResponseField>
+    
+    <ResponseField name="departmentId" type="integer">
+      Associated department ID
+    </ResponseField>
+    
+    <ResponseField name="status" type="string">
+      Job status
+    </ResponseField>
+    
+    <ResponseField name="employmentType" type="string">
+      Employment type
+    </ResponseField>
+    
+    <ResponseField name="location" type="string" optional>
+      Job location
+    </ResponseField>
+    
+    <ResponseField name="description" type="string" optional>
+      Job description
+    </ResponseField>
+    
+    <ResponseField name="skills" type="array" optional>
+      Required skills
+    </ResponseField>
+    
+    <ResponseField name="salaryType" type="string" optional>
+      Salary structure
+    </ResponseField>
+    
+    <ResponseField name="currency" type="string" optional>
+      Currency code
+    </ResponseField>
+    
+    <ResponseField name="payFrequency" type="string" optional>
+      Pay frequency
+    </ResponseField>
+    
+    <ResponseField name="salaryMin" type="number" optional>
+      Minimum salary
+    </ResponseField>
+    
+    <ResponseField name="salaryMax" type="number" optional>
+      Maximum salary
+    </ResponseField>
+    
+    <ResponseField name="salaryFixed" type="number" optional>
+      Fixed salary
+    </ResponseField>
+    
+    <ResponseField name="slug" type="string">
+      URL slug
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+### Example Request
+
+```bash
+curl -X GET http://localhost:8080/api/jobs/1
+```
+
+### Error Codes
+
+<ResponseField name="400" type="error">
+  Invalid job ID
+</ResponseField>
+
+<ResponseField name="404" type="error">
+  Job not found
+</ResponseField>
+
+<ResponseField name="500" type="error">
+  Failed to fetch job
+</ResponseField>
+
+---
+
+## Get Job by Slug
+
+<CodeGroup>
+```http
+GET /jobs/slug/{slug}
+```
+</CodeGroup>
+
+Public endpoint to fetch job information by its URL slug. Used by careers pages.
+
+### Path Parameters
+
+<ParamField path="slug" type="string" required>
+  URL-friendly job slug
+</ParamField>
+
+### Response
+
+<ResponseField name="data" type="object">
+  Public job details
+</ResponseField>
+
+### Example Request
+
+```bash
+curl -X GET http://localhost:8080/api/jobs/slug/senior-backend-engineer
+```
+
+### Error Codes
+
+<ResponseField name="400" type="error">
+  Invalid job slug
+</ResponseField>
+
+<ResponseField name="404" type="error">
+  Job not found
+</ResponseField>
+
+<ResponseField name="500" type="error">
+  Failed to fetch job
+</ResponseField>
+
+---
+
+## Update Job
+
+<CodeGroup>
+```http
+PUT /jobs/{id}
+```
+</CodeGroup>
+
+Update an existing job's details.
+
+### Path Parameters
+
+<ParamField path="id" type="integer" required>
+  Job ID to update
+</ParamField>
+
+### Request Body
+
+All fields are optional. Only include fields you want to update.
+
+<ParamField body="title" type="string" optional>
+  Job title (1-255 characters)
+</ParamField>
+
+<ParamField body="departmentId" type="integer" optional>
+  Department ID
+</ParamField>
+
+<ParamField body="status" type="string" optional>
+  Job status: `draft`, `inactive`, `published`, `closed`, or `archived`
+</ParamField>
+
+<ParamField body="employmentType" type="string" optional>
+  Employment type: `full_time`, `part_time`, `contract`, `internship`, or `freelance`
+</ParamField>
+
+<ParamField body="location" type="string" optional>
+  Job location (max 255 characters)
+</ParamField>
+
+<ParamField body="description" type="string" optional>
+  Job description
+</ParamField>
+
+<ParamField body="skills" type="array" optional>
+  Array of required skills
+</ParamField>
+
+<ParamField body="salaryType" type="string" optional>
+  Salary structure: `fixed` or `range`
+</ParamField>
+
+<ParamField body="currency" type="string" optional>
+  3-letter currency code
+</ParamField>
+
+<ParamField body="payFrequency" type="string" optional>
+  Pay frequency: `hourly`, `daily`, `weekly`, `monthly`, or `yearly`
+</ParamField>
+
+<ParamField body="salaryMin" type="number" optional>
+  Minimum salary
+</ParamField>
+
+<ParamField body="salaryMax" type="number" optional>
+  Maximum salary
+</ParamField>
+
+<ParamField body="salaryFixed" type="number" optional>
+  Fixed salary amount
+</ParamField>
+
+### Response
+
+<ResponseField name="data" type="object">
+  Updated job object
+</ResponseField>
+
+### Example Request
+
+```bash
+curl -X PUT http://localhost:8080/api/jobs/1 \
+  -H "Content-Type: application/json" \
+  -d '{
+    "title": "Lead Backend Engineer",
+    "status": "published",
+    "salaryMax": 200000
+  }'
+```
+
+### Error Codes
+
+<ResponseField name="400" type="error">
+  Invalid job ID OR Validation failed OR Department not found
+</ResponseField>
+
+<ResponseField name="404" type="error">
+  Job not found
+</ResponseField>
+
+<ResponseField name="500" type="error">
+  Failed to update job
+</ResponseField>
+
+---
+
+## Delete Job
+
+<CodeGroup>
+```http
+DELETE /jobs/{id}
+```
+</CodeGroup>
+
+Permanently delete a job opening.
+
+### Path Parameters
+
+<ParamField path="id" type="integer" required>
+  Job ID to delete
+</ParamField>
+
+### Response
+
+<ResponseField name="data" type="object">
+  Deleted job object
+</ResponseField>
+
+### Example Request
+
+```bash
+curl -X DELETE http://localhost:8080/api/jobs/1
+```
+
+### Error Codes
+
+<ResponseField name="400" type="error">
+  Invalid job ID
+</ResponseField>
+
+<ResponseField name="404" type="error">
+  Job not found
+</ResponseField>
+
+<ResponseField name="409" type="error">
+  Cannot delete a job that has candidates. Close or archive it instead.
+</ResponseField>
+
+<ResponseField name="500" type="error">
+  Failed to delete job
+</ResponseField>

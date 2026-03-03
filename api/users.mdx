@@ -1,0 +1,197 @@
+---
+title: 'Users'
+description: 'Internal team members, roles, and profile management'
+---
+
+## List All Users
+
+<CodeGroup>
+```http
+GET /users
+```
+</CodeGroup>
+
+Retrieve a list of all active recruitment team members.
+
+### Response
+
+<ResponseField name="data" type="array">
+  Array of user objects
+  
+  <Expandable title="user properties">
+    <ResponseField name="id" type="integer">
+      User identifier
+    </ResponseField>
+    
+    <ResponseField name="firstName" type="string">
+      User's first name
+    </ResponseField>
+    
+    <ResponseField name="lastName" type="string">
+      User's last name
+    </ResponseField>
+    
+    <ResponseField name="email" type="string">
+      User's email address
+    </ResponseField>
+    
+    <ResponseField name="role" type="string">
+      User role: `super_admin`, `hiring_manager`, or `interviewer`
+    </ResponseField>
+    
+    <ResponseField name="avatarUrl" type="string" optional>
+      URL to user's avatar image
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+### Example Request
+
+```bash
+curl -X GET http://localhost:8080/api/users
+```
+
+### Error Codes
+
+<ResponseField name="500" type="error">
+  Failed to fetch users
+</ResponseField>
+
+---
+
+## Get User Profile
+
+<CodeGroup>
+```http
+GET /users/{id}
+```
+</CodeGroup>
+
+Retrieve detailed information for a specific user.
+
+### Path Parameters
+
+<ParamField path="id" type="integer" required>
+  User ID
+</ParamField>
+
+### Response
+
+<ResponseField name="data" type="object">
+  User profile object
+  
+  <Expandable title="properties">
+    <ResponseField name="id" type="integer">
+      User identifier
+    </ResponseField>
+    
+    <ResponseField name="firstName" type="string">
+      User's first name
+    </ResponseField>
+    
+    <ResponseField name="lastName" type="string">
+      User's last name
+    </ResponseField>
+    
+    <ResponseField name="email" type="string">
+      User's email address
+    </ResponseField>
+    
+    <ResponseField name="role" type="string">
+      User role: `super_admin`, `hiring_manager`, or `interviewer`
+    </ResponseField>
+    
+    <ResponseField name="avatarUrl" type="string" optional>
+      URL to user's avatar image
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+### Example Request
+
+```bash
+curl -X GET http://localhost:8080/api/users/1
+```
+
+### Error Codes
+
+<ResponseField name="400" type="error">
+  Invalid user ID
+</ResponseField>
+
+<ResponseField name="404" type="error">
+  User not found
+</ResponseField>
+
+<ResponseField name="500" type="error">
+  Failed to fetch user
+</ResponseField>
+
+---
+
+## Update User Profile
+
+<CodeGroup>
+```http
+PUT /users/{id}
+```
+</CodeGroup>
+
+Update an existing user's profile information.
+
+### Path Parameters
+
+<ParamField path="id" type="integer" required>
+  User ID to update
+</ParamField>
+
+### Request Body
+
+<ParamField body="firstName" type="string" optional>
+  User's first name (1-100 characters)
+</ParamField>
+
+<ParamField body="lastName" type="string" optional>
+  User's last name (1-100 characters)
+</ParamField>
+
+<ParamField body="role" type="string" optional>
+  User role: `super_admin`, `hiring_manager`, or `interviewer`
+</ParamField>
+
+<ParamField body="avatarUrl" type="string" optional>
+  Valid URL to user's avatar image (max 1000 characters)
+</ParamField>
+
+### Response
+
+<ResponseField name="data" type="object">
+  Updated user profile object
+</ResponseField>
+
+### Example Request
+
+```bash
+curl -X PUT http://localhost:8080/api/users/1 \
+  -H "Content-Type: application/json" \
+  -d '{
+    "firstName": "John",
+    "lastName": "Doe",
+    "role": "hiring_manager",
+    "avatarUrl": "https://example.com/avatars/johndoe.jpg"
+  }'
+```
+
+### Error Codes
+
+<ResponseField name="400" type="error">
+  Invalid user ID OR Validation failed
+</ResponseField>
+
+<ResponseField name="404" type="error">
+  User not found
+</ResponseField>
+
+<ResponseField name="500" type="error">
+  Failed to update user
+</ResponseField>

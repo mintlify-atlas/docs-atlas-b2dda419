@@ -1,0 +1,454 @@
+---
+title: Managing Hiring Teams
+description: Guide for managing team members, permissions, and collaboration on job postings
+---
+
+This guide covers how to add team members to jobs, manage permissions, and collaborate effectively throughout the hiring process.
+
+## Understanding Hiring Teams
+
+Each job in OpenATS has its own hiring team - the group of people who can:
+- View and review candidates
+- Move candidates through the pipeline
+- Add internal notes and feedback
+- Access job settings and configuration
+
+### Team Roles
+
+There are two primary roles in a hiring team:
+
+**Hiring Manager**
+- Created the job or was designated as hiring manager
+- Full control over job settings
+- Can add/remove team members
+- Cannot be removed from the team
+
+**Interviewer/Team Member**
+- Can review candidates and add feedback
+- Can move candidates between stages
+- Cannot modify job settings or team members
+- Can be removed by the hiring manager
+
+## Adding Team Members to a Job
+
+<Steps>
+  <Step title="Navigate to Job Details">
+    1. Go to **Jobs** in the sidebar
+    2. Click on the job you want to configure
+    3. Click the **Hiring Team** tab
+  </Step>
+
+  <Step title="Add a Hiring Manager">
+    Under the **Hiring Manager** section:
+    1. Click **+ Add New Hiring Manager**
+    2. Select a user from your organization
+    3. Click **Add**
+
+    <Note>
+    Jobs can have multiple hiring managers. All hiring managers have equal administrative access to the job.
+    </Note>
+  </Step>
+
+  <Step title="Add Interviewers">
+    Under the **Interviewer** section:
+    1. Click **+ Add New Interviewer**  
+    2. Select a user from your organization
+    3. Click **Add**
+
+    <Tip>
+    Add all team members who will participate in the interview process, even if they're only reviewing specific stages.
+    </Tip>
+  </Step>
+
+  <Step title="Verify Team Members">
+    After adding, you'll see:
+    - User avatar and name
+    - Their role (Hiring Manager or Interviewer)
+    - Date they were added to the team
+  </Step>
+</Steps>
+
+### API Method for Adding Team Members
+
+Add team members programmatically:
+
+```javascript
+POST /api/jobs/{jobId}/hiring-team
+
+{
+  "userId": 5  // ID of the user to add
+}
+```
+
+**Response:**
+```json
+{
+  "data": {
+    "id": 12,
+    "jobId": 3,
+    "userId": 5,
+    "addedAt": "2024-01-15T10:30:00Z"
+  }
+}
+```
+
+## Removing Team Members
+
+<Steps>
+  <Step title="Locate Team Member">
+    In the **Hiring Team** tab, find the person you want to remove.
+  </Step>
+
+  <Step title="Remove Member">
+    Click the **X** or remove icon next to their name.
+  </Step>
+
+  <Step title="Confirm Removal">
+    In the confirmation dialog:
+    - Review the person's name
+    - Click **Remove** to confirm
+
+    <Warning>
+    The job creator (hiring manager) cannot be removed from the hiring team. This ensures every job has at least one owner.
+    </Warning>
+  </Step>
+</Steps>
+
+### What Happens When Someone is Removed
+
+- They immediately lose access to the job and its candidates
+- Their previous notes and actions remain visible
+- They won't receive notifications about this job
+- They can be re-added at any time
+
+## Team Member Permissions
+
+### What Hiring Managers Can Do
+
+✅ **Job Management**
+- Edit job title, description, and all settings
+- Change job status (active/inactive)
+- Delete or archive the job
+- Configure pipeline stages
+- Set up automated emails
+
+✅ **Team Management**  
+- Add hiring managers
+- Add interviewers
+- Remove team members (except themselves)
+- View team member activity
+
+✅ **Candidate Management**
+- View all candidates
+- Move candidates between stages
+- Add internal notes
+- Send emails
+- Archive candidates
+
+### What Interviewers Can Do
+
+✅ **Candidate Review**
+- View all candidates for the job
+- Read resumes and application materials
+- View assessment scores
+- Add internal notes and feedback
+- See communication history
+
+✅ **Limited Actions**
+- Move candidates between stages
+- Send emails to candidates
+- Tag candidates
+
+❌ **Cannot Do**
+- Edit job settings
+- Add/remove team members
+- Delete the job
+- Configure pipeline or automations
+
+## Collaboration Best Practices
+
+<AccordionGroup>
+  <Accordion title="Use @Mentions in Notes">
+    Tag specific team members in internal notes to get their input:
+
+    ```text
+    @SarahTech This candidate has strong React experience. 
+    Can you review their portfolio before we schedule a 
+    technical interview?
+    ```
+
+    Benefits:
+    - Team members get notifications
+    - Ensures the right person sees important feedback
+    - Creates clear action items
+  </Accordion>
+
+  <Accordion title="Define Clear Interview Stages">
+    Assign team members to specific interview stages:
+
+    **Example Structure:**
+    - **Screening** → Recruiter reviews applications
+    - **Phone Screen** → Hiring manager conducts initial call  
+    - **Technical Interview** → Engineering team assesses skills
+    - **Final Interview** → Department head makes decision
+    - **Offer** → HR sends offer letter
+
+    Document who is responsible for each stage in the job's Internal Notes.
+  </Accordion>
+
+  <Accordion title="Set Response Time Expectations">
+    Establish team guidelines:
+
+    ```text
+    Team Guidelines for [Job Title]:
+    
+    - Initial screening: Within 2 business days
+    - Interview scheduling: Within 3 business days
+    - Post-interview feedback: Same day
+    - Final decisions: Within 1 week
+    
+    Please add notes immediately after interviews while 
+    details are fresh.
+    ```
+  </Accordion>
+
+  <Accordion title="Use Internal Notes Effectively">
+    Create a standard feedback template:
+
+    ```text
+    Interview Feedback - [Candidate Name]
+    Interviewer: [Your Name]
+    Date: [Date]
+    Stage: [Phone Screen/Technical/etc.]
+
+    Technical Skills: [Rating/Comments]
+    Communication: [Rating/Comments]  
+    Culture Fit: [Rating/Comments]
+    Concerns: [Any red flags]
+    
+    Recommendation: [Advance/Reject/Needs discussion]
+    Next Steps: [Action items]
+    ```
+  </Accordion>
+</AccordionGroup>
+
+## Viewing Team Activity
+
+Track what your team is doing:
+
+### Activity Log
+View recent team actions:
+- Who moved which candidates
+- Notes and feedback added
+- Emails sent
+- Stage changes
+
+### Team Statistics
+See hiring metrics per team member:
+- Number of candidates reviewed
+- Average time to decision
+- Feedback completion rate
+- Interview participation
+
+## Managing Organization-Wide Users
+
+Administrators can manage all users from **Settings → Users**:
+
+<Steps>
+  <Step title="Add New Users">
+    1. Go to **Settings → Users**
+    2. Click **+ Add User**
+    3. Enter their information:
+       - First name
+       - Last name  
+       - Email address
+       - Role (Admin, Hiring Manager, Interviewer)
+    4. Click **Send Invite**
+
+    <Note>
+    Users receive an email invitation to set up their account and password.
+    </Note>
+  </Step>
+
+  <Step title="Set User Roles">
+    Choose the appropriate role:
+
+    **Administrator**
+    - Full system access
+    - Can manage all jobs and settings
+    - Can add/remove users
+    - Access to billing and integrations
+
+    **Hiring Manager**
+    - Can create jobs
+    - Manages their own jobs
+    - Can add team members to their jobs
+
+    **Interviewer**  
+    - Can only access jobs they're added to
+    - Cannot create jobs
+    - Can review candidates and add feedback
+  </Step>
+
+  <Step title="Deactivate Users">
+    When team members leave:
+    1. Find the user in **Settings → Users**
+    2. Click **Deactivate**
+    3. Their access is immediately revoked
+    4. Their historical actions remain visible
+
+    <Tip>
+    Deactivate rather than delete users to preserve audit trails and historical data.
+    </Tip>
+  </Step>
+</Steps>
+
+## Notifications and Alerts
+
+Team members receive notifications for:
+
+✉️ **Email Notifications**
+- When they're added to a hiring team
+- When they're @mentioned in notes
+- When candidates move to their review stage
+- Daily/weekly digest of pending actions
+
+🔔 **In-App Notifications**
+- New candidates applied
+- Team member comments
+- Urgent items requiring attention
+
+### Configuring Notification Preferences
+
+Users can customize their notifications:
+
+1. Click on your profile → **Settings**
+2. Go to **Notifications** tab
+3. Toggle notification types:
+   - Email notifications
+   - Browser notifications
+   - Slack notifications (if integrated)
+4. Set frequency (real-time, daily digest, weekly)
+
+## Common Scenarios
+
+<AccordionGroup>
+  <Accordion title="Hiring Manager is On Leave">
+    When a hiring manager is unavailable:
+
+    1. Add a temporary hiring manager to the job
+    2. Add note explaining the situation:
+       ```text
+       @TempManager - [Original Manager] is on leave until [Date]. 
+       Please handle candidates for this role in the meantime.
+       ```
+    3. When they return, they still have access (don't remove them)
+  </Accordion>
+
+  <Accordion title="Cross-Functional Interview Panels">
+    For jobs requiring input from multiple departments:
+
+    1. Add representatives from each department as interviewers
+    2. Use pipeline stages to indicate which team reviews when:
+       - Screening (HR)
+       - Technical Interview (Engineering)
+       - Team Fit Interview (Department)
+       - Executive Interview (Leadership)
+    3. Assign stage-specific reviewers in stage configuration
+  </Accordion>
+
+  <Accordion title="External Recruiters">
+    Working with external recruiters:
+
+    1. Create a user account for the recruiter
+    2. Add them only to specific jobs
+    3. Set role as "Interviewer" to limit access
+    4. Consider creating a "Recruiter" custom role with limited permissions
+    5. Remove access when engagement ends
+  </Accordion>
+
+  <Accordion title="Multiple Locations/Departments">
+    For organizations with multiple locations hiring for the same role:
+
+    **Option 1: Separate Jobs**
+    - Create separate job postings per location
+    - Add location-specific hiring teams
+    - Easier to track regional metrics
+
+    **Option 2: Single Job with Tags**
+    - One job posting
+    - Tag candidates by preferred location  
+    - Same hiring team reviews all
+    - Use custom fields for location preference
+  </Accordion>
+</AccordionGroup>
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="Cannot Add User to Team">
+    Common issues:
+    - User doesn't exist in your organization (add them in Settings → Users first)
+    - User is already on the team
+    - You don't have permission (must be hiring manager)
+    - Job is archived or closed
+  </Accordion>
+
+  <Accordion title="Team Member Cannot See Job">
+    Verify:
+    - They're added to the hiring team (check Hiring Team tab)
+    - Their account is active (not deactivated)
+    - They're logged in with the correct account
+    - Browser cache is cleared
+  </Accordion>
+
+  <Accordion title="Cannot Remove Hiring Manager">
+    The job creator cannot be removed to ensure every job has an owner. 
+    
+    **Workaround:**
+    - Add another hiring manager
+    - The new manager can modify settings
+    - Original manager keeps access but doesn't need to actively participate
+  </Accordion>
+</AccordionGroup>
+
+## API Reference
+
+### Get Hiring Team
+```javascript
+GET /api/jobs/{jobId}/hiring-team
+```
+
+### Add Team Member  
+```javascript
+POST /api/jobs/{jobId}/hiring-team
+
+Body:
+{
+  "userId": 5
+}
+```
+
+### Remove Team Member
+```javascript
+DELETE /api/jobs/{jobId}/hiring-team/{userId}
+```
+
+For complete API documentation, see [Hiring Team API Reference](/api-reference/hiring-team).
+
+## Related Guides
+
+<CardGroup cols={2}>
+  <Card title="Creating Jobs" icon="briefcase" href="/guides/creating-jobs">
+    Set up job postings with hiring teams
+  </Card>
+  <Card title="Managing Candidates" icon="users" href="/guides/managing-candidates">
+    Review and move candidates through pipeline
+  </Card>
+  <Card title="Email Templates" icon="envelope" href="/guides/email-templates">
+    Configure automated team notifications
+  </Card>
+  <Card title="API Reference" icon="code" href="/api/hiring-team">
+    Explore hiring team API endpoints
+  </Card>
+</CardGroup>

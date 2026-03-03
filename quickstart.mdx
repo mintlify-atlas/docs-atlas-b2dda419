@@ -1,80 +1,340 @@
 ---
-title: "Quickstart"
-description: "Start building awesome documentation in minutes"
+title: 'Quickstart'
+description: 'Get OpenATS up and running in minutes'
 ---
 
-## Get started in three steps
+Get your OpenATS development environment set up and create your first job posting in under 10 minutes.
 
-Get your documentation site running locally and make your first customization.
+## Prerequisites
 
-### Step 1: Set up your local environment
+Before you begin, ensure you have the following installed:
+
+- **Node.js** (version 18 or higher) - [Download here](https://nodejs.org/)
+- **Git** - [Download here](https://git-scm.com/)
+- **PostgreSQL database** - We recommend [Neon](https://neon.tech) (free tier, no local install needed)
+- **Code editor** - VS Code recommended
+
+Verify your installation:
+
+```bash
+node --version
+git --version
+```
+
+## Installation
+
+<Steps>
+  <Step title="Clone the repository">
+    Clone the OpenATS repository to your local machine:
+
+    ```bash
+    git clone https://github.com/chamals3n4/OpenATS.git
+    cd OpenATS
+    ```
+
+    <Check>Verify you're in the OpenATS directory by running `ls` - you should see `api` and `web` folders</Check>
+  </Step>
+
+  <Step title="Install pnpm">
+    OpenATS uses pnpm as its package manager. Install it globally:
+
+    <CodeGroup>
+    ```bash npm
+    npm install -g pnpm
+    ```
+
+    ```bash yarn
+    npm install -g pnpm
+    ```
+
+    ```bash pnpm
+    # If you already have pnpm installed
+    pnpm --version
+    ```
+    </CodeGroup>
+
+    <Check>Verify installation with `pnpm --version`</Check>
+  </Step>
+
+  <Step title="Install dependencies">
+    Install dependencies for both the frontend and backend:
+
+    **Frontend (web):**
+    ```bash
+    cd web
+    pnpm install
+    ```
+
+    **Backend (api):**
+    ```bash
+    cd ../api
+    pnpm install
+    ```
+
+    <Check>Wait for all dependencies to install - this may take a few minutes</Check>
+  </Step>
+
+  <Step title="Configure environment variables">
+    Set up environment variables for both applications.
+
+    **Frontend environment:**
+    ```bash
+    cd web
+    cp .env.example .env
+    ```
+
+    Edit `web/.env` and configure your authentication settings (WSO2 Asgardeo).
+
+    **Backend environment:**
+    ```bash
+    cd ../api
+    cp .env.example .env
+    ```
+
+    Edit `api/.env` with your configuration:
+
+    ```bash .env
+    # Database (Required)
+    DATABASE_URL=postgresql://user:password@host:port/database
+
+    # Cloudflare R2 Storage (Optional - for file uploads)
+    R2_ENDPOINT=https://your-account-id.r2.cloudflarestorage.com
+    R2_ACCESS_KEY_ID=your_access_key_id
+    R2_SECRET_ACCESS_KEY=your_secret_access_key
+    R2_BUCKET_NAME=your_bucket_name
+    R2_PUBLIC_URL=https://your-public-url.com
+
+    # Email (Optional - for notifications)
+    RESEND_API_KEY=re_your_api_key
+    RESEND_FROM_EMAIL=noreply@yourdomain.com
+    ```
+
+    <Note>
+    **Database URL Format:**
+    - For Neon: `postgresql://user:password@host/database?sslmode=require`
+    - For local PostgreSQL: `postgresql://localhost:5432/openats`
+    </Note>
+
+    <Check>Ensure your DATABASE_URL is correctly configured - this is required for the next steps</Check>
+  </Step>
+
+  <Step title="Set up the database">
+    Run database migrations and seed data from the `api` directory:
+
+    **Generate and run migrations:**
+    ```bash
+    pnpm drizzle-kit generate
+    pnpm drizzle-kit migrate
+    ```
+
+    **Seed the database:**
+    ```bash
+    pnpm tsx src/db/seed.ts
+    ```
+
+    This creates all necessary tables and inserts default hiring pipeline stages.
+
+    <Check>Verify migrations completed successfully - you should see confirmation messages</Check>
+  </Step>
+
+  <Step title="Start the development servers">
+    Run both the frontend and backend servers in separate terminal windows.
+
+    **Terminal 1 - Backend API:**
+    ```bash
+    cd api
+    pnpm dev
+    ```
+
+    The API will start on `http://localhost:5000`
+
+    **Terminal 2 - Frontend Web:**
+    ```bash
+    cd web
+    pnpm dev
+    ```
+
+    The web app will start on `http://localhost:3000`
+
+    <Check>Open `http://localhost:3000` in your browser - you should see the OpenATS interface</Check>
+  </Step>
+</Steps>
+
+## Creating Your First Job Posting
+
+Now that OpenATS is running, let's create your first job posting.
+
+<Steps>
+  <Step title="Access the application">
+    Navigate to `http://localhost:3000` in your browser and sign in with your configured authentication provider.
+  </Step>
+
+  <Step title="Navigate to Jobs">
+    From the dashboard, click on the "Jobs" section in the navigation menu.
+  </Step>
+
+  <Step title="Create a new job">
+    Click the "Create Job" or "New Job Posting" button.
+  </Step>
+
+  <Step title="Fill in job details">
+    Enter the following information:
+    
+    - **Job Title** (e.g., "Senior Software Engineer")
+    - **Department** (e.g., "Engineering")
+    - **Location** (e.g., "Remote" or "San Francisco, CA")
+    - **Employment Type** (Full-time, Part-time, Contract)
+    - **Job Description** (Responsibilities, requirements, etc.)
+    - **Salary Range** (Optional)
+
+    <Tip>Use the rich text editor to format your job description with bullet points and sections</Tip>
+  </Step>
+
+  <Step title="Configure hiring pipeline">
+    The default hiring pipeline stages are automatically applied:
+    
+    - Applied
+    - Screening
+    - Interview
+    - Offer
+    - Hired
+
+    You can customize these stages later in the settings.
+  </Step>
+
+  <Step title="Publish the job">
+    Click "Save" or "Publish" to create your job posting. It will now be visible to applicants and your hiring team.
+
+    <Check>Your first job posting is live! You can now start receiving applications.</Check>
+  </Step>
+</Steps>
+
+## Verification Steps
+
+Ensure everything is working correctly:
 
 <AccordionGroup>
-  <Accordion icon="copy" title="Clone your docs locally">
-    During the onboarding process, you created a GitHub repository with your docs content if you didn't already have one. You can find a link to this repository in your [dashboard](https://dashboard.mintlify.com).
-    
-    To clone the repository locally so that you can make and preview changes to your docs, follow the [Cloning a repository](https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository) guide in the GitHub docs.
+  <Accordion title="Backend API is running">
+    Visit `http://localhost:5000` - you should see an API response or Swagger documentation.
   </Accordion>
-  <Accordion icon="rectangle-terminal" title="Start the preview server">
-    1. Install the Mintlify CLI: `npm i -g mint`
-    2. Navigate to your docs directory and run: `mint dev`
-    3. Open `http://localhost:3000` to see your docs live!
-    
-    <Tip>Your preview updates automatically as you edit files.</Tip>
+
+  <Accordion title="Frontend is accessible">
+    Visit `http://localhost:3000` - you should see the OpenATS login page or dashboard.
+  </Accordion>
+
+  <Accordion title="Database connection">
+    Check your terminal logs for the API server - there should be no database connection errors.
+  </Accordion>
+
+  <Accordion title="Job posting appears">
+    Navigate to the Jobs section and verify your newly created job posting is displayed.
   </Accordion>
 </AccordionGroup>
 
-### Step 2: Deploy your changes
+## Troubleshooting
 
 <AccordionGroup>
-  <Accordion icon="github" title="Install our GitHub app">
-    Install the Mintlify GitHub app from your [dashboard](https://dashboard.mintlify.com/settings/organization/github-app).
-    
-    Our GitHub app automatically deploys your changes to your docs site, so you don't need to manage deployments yourself.
-</Accordion>
-<Accordion icon="palette" title="Update your site name and colors">
-    For a first change, let's update the name and colors of your docs site.
+  <Accordion title="Database connection failed">
+    **Problem:** Error connecting to PostgreSQL database.
 
-    1. Open `docs.json` in your editor.
-    2. Change the `"name"` field to your project name.
-    3. Update the `"colors"` to match your brand.
-    4. Save and see your changes instantly at `http://localhost:3000`.
+    **Solutions:**
+    - Verify your `DATABASE_URL` in `api/.env` is correct
+    - Ensure your database server is running
+    - For Neon, check that you've added `?sslmode=require` to the connection string
+    - Test the connection using a PostgreSQL client
+  </Accordion>
 
-    <Tip>Try changing the primary color to see an immediate difference!</Tip>
+  <Accordion title="Port already in use">
+    **Problem:** Error: `EADDRINUSE: address already in use :::3000` or `:::5000`
+
+    **Solutions:**
+    - Kill the process using the port:
+      ```bash
+      # On macOS/Linux
+      lsof -ti:3000 | xargs kill -9
+      lsof -ti:5000 | xargs kill -9
+      
+      # On Windows
+      netstat -ano | findstr :3000
+      taskkill /PID <PID> /F
+      ```
+    - Or change the port in your configuration
+  </Accordion>
+
+  <Accordion title="Module not found errors">
+    **Problem:** Error: `Cannot find module 'X'`
+
+    **Solutions:**
+    - Delete `node_modules` and reinstall:
+      ```bash
+      rm -rf node_modules
+      pnpm install
+      ```
+    - Ensure you're using the correct Node.js version (18+)
+    - Clear pnpm cache: `pnpm store prune`
+  </Accordion>
+
+  <Accordion title="Migration errors">
+    **Problem:** Database migration fails or tables not created.
+
+    **Solutions:**
+    - Ensure your database is empty or drop existing tables
+    - Run migrations in order:
+      ```bash
+      pnpm drizzle-kit generate
+      pnpm drizzle-kit migrate
+      ```
+    - Check database permissions - your user needs CREATE TABLE privileges
+  </Accordion>
+
+  <Accordion title="Authentication not working">
+    **Problem:** Cannot sign in or authentication redirects fail.
+
+    **Solutions:**
+    - Verify WSO2 Asgardeo configuration in `web/.env`
+    - Check that callback URLs are correctly configured in your Asgardeo application
+    - Ensure your client ID and client secret are correct
+    - Clear browser cookies and try again
+  </Accordion>
+
+  <Accordion title="File upload errors">
+    **Problem:** Cannot upload resumes or attachments.
+
+    **Solutions:**
+    - Verify R2 configuration in `api/.env` (if using Cloudflare R2)
+    - Check that your R2 bucket exists and is accessible
+    - Verify access key credentials are correct
+    - Ensure your bucket has the correct CORS policy
   </Accordion>
 </AccordionGroup>
 
-### Step 3: Go live
-
-<Accordion icon="rocket" title="Publish your docs">
-  1. Commit and push your changes.
-  2. Your docs will update and be live in moments!
-</Accordion>
-
-## Next steps
-
-Now that you have your docs running, explore these key features:
+## Next Steps
 
 <CardGroup cols={2}>
+  <Card title="Architecture" icon="diagram-project" href="/architecture">
+    Understand the technical stack and system design
+  </Card>
 
-<Card title="Write Content" icon="pen-to-square" href="/essentials/markdown">
-  Learn MDX syntax and start writing your documentation.
-</Card>
+  <Card title="Creating Jobs" icon="briefcase" href="/guides/creating-jobs">
+    Learn how to create and manage job postings
+  </Card>
 
-<Card title="Customize style" icon="palette" href="/essentials/settings">
-  Make your docs match your brand perfectly.
-</Card>
+  <Card title="API Reference" icon="code" href="/api/overview">
+    Explore the OpenATS API endpoints
+  </Card>
 
-<Card title="Add code examples" icon="square-code" href="/essentials/code">
-  Include syntax-highlighted code blocks.
-</Card>
-
-<Card title="API documentation" icon="code" href="/api-reference/introduction">
-  Auto-generate API docs from OpenAPI specs.
-</Card>
-
+  <Card title="Development Setup" icon="rocket" href="/development/setup">
+    Detailed development environment setup
+  </Card>
 </CardGroup>
 
-<Note>
-  **Need help?** See our [full documentation](https://mintlify.com/docs) or join our [community](https://mintlify.com/community).
-</Note>
+## Additional Resources
+
+- **Tech Stack:** Next.js, Express.js, PostgreSQL, Drizzle ORM, TypeScript
+- **Authentication:** WSO2 Asgardeo
+- **Storage:** Cloudflare R2 (optional)
+- **Email:** Resend (optional)
+
+<Tip>
+Join our community for support, feature requests, and to contribute to OpenATS development!
+</Tip>

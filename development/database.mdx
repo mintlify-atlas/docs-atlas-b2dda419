@@ -1,0 +1,409 @@
+---
+title: 'Database Schema'
+description: 'Understanding the OpenATS database structure and migrations'
+---
+
+## Overview
+
+OpenATS uses **PostgreSQL** as its database and **Drizzle ORM** for type-safe database operations. The schema is defined in TypeScript and migrations are managed using Drizzle Kit.
+
+## Schema Structure
+
+The database schema is organized into the following modules:
+
+- **Company & Departments** - Organization structure
+- **Users** - User accounts and roles
+- **Jobs** - Job postings and requirements
+- **Pipeline** - Hiring pipeline stages
+- **Candidates** - Applicant information and tracking
+- **Assessments** - Technical assessments and custom questions
+- **Offers** - Job offers and templates
+- **Communications** - Email templates and notifications
+
+## Key Tables
+
+### Users
+
+Location: `api/src/db/schema/users.ts`
+
+```typescript
+users {
+  id: serial (primary key)
+  asgardeoUserId: varchar(255) unique  // WSO2 Asgardeo sub claim
+  firstName: varchar(100)
+  lastName: varchar(100)
+  email: varchar(255) unique
+  avatarUrl: varchar(1000)
+  role: userRole enum  // super_admin, hiring_manager, interviewer
+  isActive: boolean
+  createdAt: timestamp
+  updatedAt: timestamp
+}
+```
+
+**User Roles:**
+- `super_admin` - Full system access
+- `hiring_manager` - Manage jobs and candidates
+- `interviewer` - Review and interview candidates
+
+### Jobs
+
+Location: `api/src/db/schema/jobs.ts`
+
+```typescript
+jobs {
+  id: serial (primary key)
+  slug: varchar(255) unique
+  title: varchar(255)
+  departmentId: integer → departments.id
+  employmentType: enum  // full_time, part_time, contract, internship, freelance
+  location: varchar(255)
+  description: text
+  
+  // Salary information
+  salaryType: enum  // range, fixed
+  currency: varchar(3)  // ISO 4217 (e.g., USD)
+  payFrequency: enum  // hourly, daily, weekly, monthly, yearly
+  salaryFixed: numeric(12,2)
+  salaryMin: numeric(12,2)
+  salaryMax: numeric(12,2)
+  
+  status: jobStatus  // draft, inactive, published, closed, archived
+  createdBy: integer → users.id
+  createdAt: timestamp
+  updatedAt: timestamp
+}
+
+jobSkills {
+  id: serial (primary key)
+  jobId: integer → jobs.id (cascade delete)
+  skill: varchar(100)
+  unique(jobId, skill)
+}
+```
+
+### Candidates
+
+Location: `api/src/db/schema/candidates.ts`
+
+```typescript
+candidates {
+  id: serial (primary key)
+  firstName: varchar(100)
+  lastName: varchar(100)
+  email: varchar(255)
+  phone: varchar(50)
+  resumeUrl: varchar(1000)  // Cloudflare R2 URL
+  jobId: integer → jobs.id
+  currentStageId: integer → jobPipelineStages.id
+  appliedAt: timestamp
+  updatedAt: timestamp
+}
+
+candidateStageHistory {
+  id: serial (primary key)
+  candidateId: integer → candidates.id (cascade delete)
+  stageId: integer → jobPipelineStages.id
+  movedBy: integer → users.id
+  movedAt: timestamp
+}
+
+candidateCvAnalysis {
+  id: serial (primary key)
+  candidateId: integer → candidates.id (cascade delete)
+  jobId: integer → jobs.id
+  matchScore: numeric(5,2)
+  matchedSkills: text[]
+  missingSkills: text[]
+  extractedText: text
+  status: cvAnalysisStatus  // pending, done, failed
+  errorMessage: text
+  createdAt: timestamp
+  updatedAt: timestamp
+  unique(candidateId)
+}
+```
+
+### Assessments
+
+Location: `api/src/db/schema/assessments.ts`
+
+```typescript
+assessments {
+  id: serial (primary key)
+  title: varchar(255)
+  description: text
+  timeLimit: integer  // in minutes
+  passScore: numeric(5,2)
+  createdBy: integer → users.id
+  createdAt: timestamp
+  updatedAt: timestamp
+}
+
+assessmentQuestions {
+  id: serial (primary key)
+  assessmentId: integer → assessments.id (cascade delete)
+  title: varchar(500)
+  description: text
+  questionType: enum  // short_answer, long_answer, checkbox, radio, multiple_choice
+  points: numeric(6,2)
+  position: integer
+  createdAt: timestamp
+  updatedAt: timestamp
+}
+
+assessmentQuestionOptions {
+  id: serial (primary key)
+  questionId: integer → assessmentQuestions.id (cascade delete)
+  label: varchar(500)
+  isCorrect: boolean
+  position: integer
+  createdAt: timestamp
+}
+
+candidateAssessmentAttempts {
+  id: serial (primary key)
+  candidateId: integer → candidates.id (cascade delete)
+  assessmentId: integer → assessments.id (cascade delete)
+  token: varchar(255) unique
+  status: assessmentStatus  // pending, started, completed, expired
+  expiresAt: timestamp
+  startedAt: timestamp
+  completedAt: timestamp
+  scoreRaw: numeric(8,2)
+  scoreTotal: numeric(8,2)
+  scorePercentage: numeric(5,2)
+  passed: boolean
+  candidateNameInput: varchar(255)
+  candidateEmailInput: varchar(255)
+  createdAt: timestamp
+  updatedAt: timestamp
+}
+```
+
+### Pipeline Stages
+
+Location: `api/src/db/schema/pipeline.ts`
+
+```typescript
+pipelineStageTemplates {
+  id: serial (primary key)
+  name: varchar(100) unique
+  position: integer
+  stageType: enum  // none, source, assessment, interview, offer, rejection
+  isDeletable: boolean
+  createdAt: timestamp
+  updatedAt: timestamp
+}
+
+jobPipelineStages {
+  id: serial (primary key)
+  jobId: integer → jobs.id (cascade delete)
+  name: varchar(100)
+  position: integer
+  stageType: enum  // none, source, assessment, interview, offer, rejection
+  offerTemplateId: integer → templates.id
+  offerMode: enum  // auto_draft, auto_send
+  offerExpiryDays: integer
+  rejectionTemplateId: integer → templates.id
+  sourceTemplateId: integer → pipelineStageTemplates.id
+  createdAt: timestamp
+  updatedAt: timestamp
+  unique(jobId, position)
+}
+
+jobHiringTeam {
+  id: serial (primary key)
+  jobId: integer → jobs.id (cascade delete)
+  userId: integer → users.id (cascade delete)
+  addedAt: timestamp
+  unique(jobId, userId)
+}
+```
+
+### Offers
+
+Location: `api/src/db/schema/offers.ts`
+
+```typescript
+offers {
+  id: serial (primary key)
+  candidateId: integer → candidates.id (cascade delete)
+  jobId: integer → jobs.id
+  templateId: integer → templates.id
+  status: offerStatus  // draft, sent, pending, accepted, declined, withdrawn
+  salary: numeric(12,2)
+  currency: varchar(3)
+  payFrequency: enum
+  startDate: date
+  expiryDate: date
+  renderedHtml: text
+  sentAt: timestamp
+  createdBy: integer → users.id
+  createdAt: timestamp
+  updatedAt: timestamp
+}
+```
+
+### Company & Departments
+
+Location: `api/src/db/schema/company.ts`
+
+```typescript
+company {
+  id: serial (primary key)
+  name: varchar(255)
+  email: varchar(255)
+  website: varchar(500)
+  phone: varchar(50)
+  address: text
+  description: text
+  logoUrl: varchar(1000)
+  createdAt: timestamp
+  updatedAt: timestamp
+}
+
+departments {
+  id: serial (primary key)
+  companyId: integer → company.id (cascade delete)
+  name: varchar(255)
+  createdAt: timestamp
+  updatedAt: timestamp
+  unique(companyId, name)
+}
+```
+
+## Relationships
+
+### Key Foreign Key Relationships
+
+1. **Jobs → Departments**: Each job belongs to a department
+2. **Jobs → Users**: Each job has a creator (`createdBy`)
+3. **Candidates → Jobs**: Each candidate applies to a specific job
+4. **Candidates → Pipeline Stages**: Candidates move through pipeline stages
+5. **Assessments → Questions → Options**: Hierarchical assessment structure
+6. **Candidates → Assessment Attempts**: Track candidate assessment attempts
+7. **Offers → Candidates & Jobs**: Connect offers to candidates and jobs
+8. **Job Hiring Team**: Many-to-many relationship between jobs and users
+
+### Cascade Delete Behavior
+
+- **Jobs deleted**: Cascades to job skills, pipeline stages, custom questions
+- **Candidates deleted**: Cascades to stage history, custom answers, assessment attempts, CV analysis
+- **Assessments deleted**: Cascades to questions, options, and candidate attempts
+- **Companies deleted**: Cascades to departments
+
+## Database Migrations
+
+### Configuration
+
+The Drizzle configuration is defined in `api/drizzle.config.ts`:
+
+```typescript
+import "dotenv/config";
+import { defineConfig } from "drizzle-kit";
+
+export default defineConfig({
+  out: "./drizzle",
+  schema: "./src/db/schema.ts",
+  dialect: "postgresql",
+  dbCredentials: {
+    url: process.env.DATABASE_URL!,
+  },
+});
+```
+
+### Migration Commands
+
+#### Generate a New Migration
+
+After modifying schema files, generate a migration:
+
+```bash
+cd api
+pnpm drizzle-kit generate
+```
+
+This creates SQL migration files in `api/drizzle/`.
+
+#### Apply Migrations
+
+Apply pending migrations to your database:
+
+```bash
+pnpm drizzle-kit migrate
+```
+
+#### View Current Schema
+
+Inspect your database schema:
+
+```bash
+pnpm drizzle-kit studio
+```
+
+This opens Drizzle Studio in your browser for visual schema exploration.
+
+### Migration Files
+
+Migrations are stored in `api/drizzle/` and include:
+
+- `0000_powerful_trish_tilby.sql` - Initial schema
+- `0001_crazy_tusk.sql` - Schema updates
+- `0002_supreme_metal_master.sql` - Schema updates
+- `0003_nostalgic_deadpool.sql` - Latest schema updates
+- `meta/_journal.json` - Migration metadata
+- `meta/XXXX_snapshot.json` - Schema snapshots
+
+<Warning>
+**Important**: Always commit generated migration files along with your schema changes!
+
+If you modify the database schema:
+1. Run `pnpm drizzle-kit generate` to create migration files
+2. Test the migration locally with `pnpm drizzle-kit migrate`
+3. Commit both the schema changes AND the generated migration files
+</Warning>
+
+## Seeding the Database
+
+The seed script (`api/src/db/seed.ts`) inserts default pipeline stage templates:
+
+```bash
+pnpm tsx src/db/seed.ts
+```
+
+This is required for the application to function properly.
+
+## Best Practices
+
+1. **Never edit migration files directly** - Always modify schema files and generate new migrations
+2. **Test migrations locally** before committing
+3. **Use transactions** for complex data operations
+4. **Leverage Drizzle's type safety** - schema changes automatically update TypeScript types
+5. **Document schema changes** in pull requests
+6. **Keep migrations sequential** - don't delete or reorder existing migrations
+
+## TypeScript Types
+
+Drizzle automatically generates TypeScript types from your schema:
+
+```typescript
+import { type Job, type NewJob } from './db/schema/jobs';
+import { type Candidate, type NewCandidate } from './db/schema/candidates';
+
+// Use for select operations
+const job: Job = await db.query.jobs.findFirst();
+
+// Use for insert operations
+const newJob: NewJob = {
+  title: 'Software Engineer',
+  departmentId: 1,
+  // ...
+};
+```
+
+## Next Steps
+
+- Review the [Contributing Guidelines](/development/contributing)
+- Explore the schema files in `api/src/db/schema/`
+- Check out [Drizzle ORM documentation](https://orm.drizzle.team/)

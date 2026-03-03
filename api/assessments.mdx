@@ -1,0 +1,456 @@
+---
+title: 'Assessment Creation'
+description: 'Create and manage technical assessments and question banks'
+---
+
+## Overview
+
+Assessment endpoints allow you to create technical tests with questions, options, and scoring criteria. These assessments can be attached to jobs and automatically sent to candidates.
+
+---
+
+## List All Assessments
+
+<CodeGroup>
+```bash GET /assessments
+curl -X GET http://localhost:8080/api/assessments
+```
+</CodeGroup>
+
+Retrieve all assessments in the system.
+
+### Response
+
+```json
+{
+  "data": [
+    {
+      "id": 1,
+      "title": "Backend Node.js Assessment",
+      "description": "Technical screening for backend developers",
+      "timeLimit": 60,
+      "passScore": 70,
+      "createdBy": 1,
+      "createdAt": "2024-01-15T10:00:00Z",
+      "updatedAt": "2024-01-15T10:00:00Z"
+    }
+  ]
+}
+```
+
+---
+
+## Get Assessment Details
+
+<CodeGroup>
+```bash GET /assessments/{id}
+curl -X GET http://localhost:8080/api/assessments/1
+```
+</CodeGroup>
+
+Retrieve a specific assessment with all its questions and options.
+
+### Path Parameters
+
+<ParamField path="id" type="integer" required>
+  The unique identifier of the assessment
+</ParamField>
+
+### Response
+
+```json
+{
+  "data": {
+    "id": 1,
+    "title": "Backend Node.js Assessment",
+    "description": "Technical screening for backend developers",
+    "timeLimit": 60,
+    "passScore": 70,
+    "createdBy": 1,
+    "createdAt": "2024-01-15T10:00:00Z",
+    "questions": [
+      {
+        "id": 1,
+        "title": "Which of the following are Node.js core modules?",
+        "description": null,
+        "questionType": "multiple_choice",
+        "points": 1,
+        "position": 1,
+        "options": [
+          {
+            "id": 1,
+            "label": "fs",
+            "isCorrect": true,
+            "position": 1
+          },
+          {
+            "id": 2,
+            "label": "express",
+            "isCorrect": false,
+            "position": 2
+          }
+        ]
+      },
+      {
+        "id": 2,
+        "title": "Explain the difference between async/await and Promises",
+        "description": "Provide a detailed answer",
+        "questionType": "short_answer",
+        "points": 2,
+        "position": 2,
+        "options": []
+      }
+    ]
+  }
+}
+```
+
+---
+
+## Create Assessment
+
+<CodeGroup>
+```bash POST /assessments
+curl -X POST http://localhost:8080/api/assessments \
+  -H "Content-Type: application/json" \
+  -d '{
+    "title": "Backend Node.js Assessment",
+    "description": "Technical screening test",
+    "timeLimit": 60,
+    "passScore": 70
+  }'
+```
+</CodeGroup>
+
+Create a new assessment bank. Questions can be added separately or included in the creation request.
+
+### Body Parameters
+
+<ParamField body="title" type="string" required>
+  Assessment name (max 255 characters)
+</ParamField>
+
+<ParamField body="description" type="string">
+  Optional description of the assessment
+</ParamField>
+
+<ParamField body="timeLimit" type="integer" required>
+  Time limit in minutes for completing the assessment
+</ParamField>
+
+<ParamField body="passScore" type="number" required>
+  Minimum percentage score required to pass (0-100)
+</ParamField>
+
+<ParamField body="createdBy" type="integer" default="1">
+  User ID of the assessment creator (defaults to 1 until auth is implemented)
+</ParamField>
+
+<ParamField body="questions" type="array">
+  Optional array of questions to add during creation
+</ParamField>
+
+### Response
+
+```json
+{
+  "data": {
+    "id": 2,
+    "title": "Backend Node.js Assessment",
+    "description": "Technical screening test",
+    "timeLimit": 60,
+    "passScore": 70,
+    "createdBy": 1,
+    "createdAt": "2024-01-20T14:30:00Z",
+    "updatedAt": "2024-01-20T14:30:00Z"
+  }
+}
+```
+
+---
+
+## Update Assessment
+
+<CodeGroup>
+```bash PUT /assessments/{id}
+curl -X PUT http://localhost:8080/api/assessments/1 \
+  -H "Content-Type: application/json" \
+  -d '{
+    "title": "Advanced Node.js Assessment",
+    "timeLimit": 90,
+    "passScore": 75
+  }'
+```
+</CodeGroup>
+
+Update assessment basic information. Use question-specific endpoints to manage questions.
+
+### Path Parameters
+
+<ParamField path="id" type="integer" required>
+  The unique identifier of the assessment
+</ParamField>
+
+### Body Parameters
+
+All parameters are optional. Only include fields you want to update.
+
+<ParamField body="title" type="string">
+  Updated assessment title (max 255 characters)
+</ParamField>
+
+<ParamField body="description" type="string">
+  Updated description
+</ParamField>
+
+<ParamField body="timeLimit" type="integer">
+  Updated time limit in minutes
+</ParamField>
+
+<ParamField body="passScore" type="number">
+  Updated pass score percentage (0-100)
+</ParamField>
+
+### Response
+
+```json
+{
+  "data": {
+    "id": 1,
+    "title": "Advanced Node.js Assessment",
+    "description": "Technical screening test",
+    "timeLimit": 90,
+    "passScore": 75,
+    "createdBy": 1,
+    "updatedAt": "2024-01-20T15:00:00Z"
+  }
+}
+```
+
+---
+
+## Delete Assessment
+
+<CodeGroup>
+```bash DELETE /assessments/{id}
+curl -X DELETE http://localhost:8080/api/assessments/1
+```
+</CodeGroup>
+
+Permanently delete an assessment and all its questions.
+
+### Path Parameters
+
+<ParamField path="id" type="integer" required>
+  The unique identifier of the assessment to delete
+</ParamField>
+
+### Response
+
+```json
+{
+  "data": {
+    "id": 1,
+    "title": "Advanced Node.js Assessment"
+  }
+}
+```
+
+---
+
+## Add Question to Assessment
+
+<CodeGroup>
+```bash POST /assessments/{id}/questions
+curl -X POST http://localhost:8080/api/assessments/1/questions \
+  -H "Content-Type: application/json" \
+  -d '{
+    "title": "Which of the following are Node.js core modules?",
+    "questionType": "multiple_choice",
+    "points": 1,
+    "position": 1,
+    "options": [
+      {"label": "fs", "isCorrect": true, "position": 1},
+      {"label": "express", "isCorrect": false, "position": 2}
+    ]
+  }'
+```
+</CodeGroup>
+
+Add a new question to an existing assessment.
+
+### Path Parameters
+
+<ParamField path="id" type="integer" required>
+  The unique identifier of the assessment
+</ParamField>
+
+### Body Parameters
+
+<ParamField body="title" type="string" required>
+  The question text (max 500 characters)
+</ParamField>
+
+<ParamField body="description" type="string">
+  Optional additional context or instructions
+</ParamField>
+
+<ParamField body="questionType" type="string" required>
+  Type of question. Options: `short_answer`, `multiple_choice`
+</ParamField>
+
+<ParamField body="points" type="number" default="1">
+  Point value for this question
+</ParamField>
+
+<ParamField body="position" type="integer" required>
+  Display order of the question
+</ParamField>
+
+<ParamField body="options" type="array">
+  Array of answer options (required for `multiple_choice`, minimum 2 options)
+</ParamField>
+
+<ParamField body="options[].label" type="string" required>
+  The option text (max 500 characters)
+</ParamField>
+
+<ParamField body="options[].isCorrect" type="boolean" default="false">
+  Whether this is a correct answer
+</ParamField>
+
+<ParamField body="options[].position" type="integer" required>
+  Display order of this option
+</ParamField>
+
+### Response
+
+```json
+{
+  "data": {
+    "id": 5,
+    "assessmentId": 1,
+    "title": "Which of the following are Node.js core modules?",
+    "questionType": "multiple_choice",
+    "points": 1,
+    "position": 1,
+    "options": [
+      {
+        "id": 10,
+        "label": "fs",
+        "isCorrect": true,
+        "position": 1
+      },
+      {
+        "id": 11,
+        "label": "express",
+        "isCorrect": false,
+        "position": 2
+      }
+    ]
+  }
+}
+```
+
+---
+
+## Update Question
+
+<CodeGroup>
+```bash PUT /assessments/{id}/questions/{questionId}
+curl -X PUT http://localhost:8080/api/assessments/1/questions/5 \
+  -H "Content-Type: application/json" \
+  -d '{
+    "title": "Select all Node.js core modules from the list",
+    "points": 2
+  }'
+```
+</CodeGroup>
+
+Update an existing question in an assessment.
+
+### Path Parameters
+
+<ParamField path="id" type="integer" required>
+  The unique identifier of the assessment
+</ParamField>
+
+<ParamField path="questionId" type="integer" required>
+  The unique identifier of the question
+</ParamField>
+
+### Body Parameters
+
+All parameters are optional.
+
+<ParamField body="title" type="string">
+  Updated question text
+</ParamField>
+
+<ParamField body="description" type="string">
+  Updated description
+</ParamField>
+
+<ParamField body="questionType" type="string">
+  Updated question type
+</ParamField>
+
+<ParamField body="points" type="number">
+  Updated point value
+</ParamField>
+
+<ParamField body="position" type="integer">
+  Updated position
+</ParamField>
+
+<ParamField body="options" type="array">
+  Updated options array
+</ParamField>
+
+### Response
+
+```json
+{
+  "data": {
+    "id": 5,
+    "assessmentId": 1,
+    "title": "Select all Node.js core modules from the list",
+    "points": 2,
+    "position": 1
+  }
+}
+```
+
+---
+
+## Delete Question
+
+<CodeGroup>
+```bash DELETE /assessments/{id}/questions/{questionId}
+curl -X DELETE http://localhost:8080/api/assessments/1/questions/5
+```
+</CodeGroup>
+
+Remove a question from an assessment.
+
+### Path Parameters
+
+<ParamField path="id" type="integer" required>
+  The unique identifier of the assessment
+</ParamField>
+
+<ParamField path="questionId" type="integer" required>
+  The unique identifier of the question to delete
+</ParamField>
+
+### Response
+
+```json
+{
+  "data": {
+    "id": 5,
+    "assessmentId": 1,
+    "title": "Select all Node.js core modules from the list"
+  }
+}
+```

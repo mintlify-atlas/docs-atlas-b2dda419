@@ -1,0 +1,227 @@
+---
+title: 'Authentication'
+description: 'Learn how to authenticate with the OpenATS API using WSO2 Asgardeo'
+---
+
+## Overview
+
+OpenATS uses **WSO2 Asgardeo** for authentication and authorization. Asgardeo is a cloud-native identity and access management (IAM) solution that provides secure OAuth 2.0 and OpenID Connect authentication.
+
+<Note>
+  The web application (`/web`) integrates with Asgardeo for user authentication. The API itself currently doesn't enforce authentication middleware on endpoints, but the frontend handles authentication flow.
+</Note>
+
+## Authentication Flow
+
+OpenATS uses the **Authorization Code Flow** with Asgardeo for secure user authentication:
+
+1. User visits the OpenATS web application
+2. User clicks sign in and is redirected to Asgardeo
+3. User authenticates with Asgardeo
+4. Asgardeo redirects back to OpenATS with an authorization code
+5. Application exchanges the code for access tokens
+6. Access tokens are used to make authenticated requests
+
+## Setting Up Asgardeo
+
+To enable authentication in your OpenATS deployment, you need to configure WSO2 Asgardeo.
+
+### Step 1: Create an Asgardeo Account
+
+1. Visit [https://asgardeo.io](https://asgardeo.io)
+2. Sign up for a free account or log in
+3. Create a new organization
+
+### Step 2: Register Your Application
+
+1. In the Asgardeo console, navigate to **Applications**
+2. Click **New Application**
+3. Select **Single-Page Application** (for Next.js)
+4. Configure the application:
+   - **Name**: OpenATS
+   - **Authorized redirect URLs**: `http://localhost:3000/api/auth/callback`
+   - **Allowed origins**: `http://localhost:3000`
+
+### Step 3: Configure Environment Variables
+
+The OpenATS web application uses the `@asgardeo/nextjs` package for authentication. Configure the following environment variables:
+
+```bash .env.local
+ASGARDEO_CLIENT_ID=your_client_id
+ASGARDEO_CLIENT_SECRET=your_client_secret
+ASGARDEO_BASE_URL=https://api.asgardeo.io/t/your_org
+ASGARDEO_SIGN_IN_REDIRECT_URL=http://localhost:3000/api/auth/callback
+ASGARDEO_SIGN_OUT_REDIRECT_URL=http://localhost:3000/login
+```
+
+<Info>
+  Replace `your_client_id`, `your_client_secret`, and `your_org` with your actual Asgardeo application credentials.
+</Info>
+
+## Protected Routes
+
+The OpenATS web application uses middleware to protect routes. The following routes are **public** and don't require authentication:
+
+- `/login` - Login page
+- `/careers/*` - Public job board
+- `/assessment/*` - Public assessment pages for candidates
+
+All other routes are protected and require authentication.
+
+### Middleware Implementation
+
+The authentication middleware is implemented in `/web/proxy.ts`:
+
+```typescript
+import {
+  asgardeoMiddleware,
+  createRouteMatcher,
+} from "@asgardeo/nextjs/server";
+import { NextResponse } from "next/server";
+
+const isPublicRoute = createRouteMatcher([
+  "/login",
+  "/careers/(.*)",
+  "/assessment/(.*)",
+]);
+
+export const proxy = asgardeoMiddleware(
+  async (asgardeo, request) => {
+    if (request.nextUrl.pathname === "/login" && asgardeo.isSignedIn()) {
+      return NextResponse.redirect(new URL("/", request.url));
+    }
+
+    if (!isPublicRoute(request)) {
+      const protectionResult = await asgardeo.protectRoute();
+
+      if (protectionResult) {
+        return protectionResult;
+      }
+    }
+  },
+  { signInUrl: "/login" },
+);
+```
+
+## Making Authenticated Requests
+
+When making API requests from the authenticated web application, you can access the user's session and tokens.
+
+### Getting User Information
+
+```typescript
+import { getSession } from "@asgardeo/nextjs/server";
+
+const session = await getSession();
+if (session) {
+  console.log(session.user); // User information
+  console.log(session.accessToken); // Access token
+}
+```
+
+### Example API Call with Authentication
+
+```typescript
+import { getSession } from "@asgardeo/nextjs/server";
+
+const session = await getSession();
+
+const response = await fetch('http://localhost:8080/api/company', {
+  headers: {
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${session?.accessToken}`
+  }
+});
+
+const data = await response.json();
+```
+
+## Using cURL with Authentication
+
+For testing purposes, you can make authenticated requests using cURL with a bearer token:
+
+```bash
+curl -X GET http://localhost:8080/api/company \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
+```
+
+<Warning>
+  In the current implementation, the API endpoints don't enforce authentication at the API level. Authentication is handled by the web application frontend. Future updates may add API-level authentication middleware.
+</Warning>
+
+## Sign In Component
+
+The web application provides a sign-in button component from Asgardeo:
+
+```typescript
+import { SignInButton } from "@asgardeo/nextjs";
+
+export default function LoginPage() {
+  return (
+    <div>
+      <SignInButton />
+    </div>
+  );
+}
+```
+
+## Session Management
+
+The Asgardeo integration handles session management automatically:
+
+- **Session Storage**: Sessions are stored securely using encrypted cookies
+- **Token Refresh**: Access tokens are automatically refreshed when expired
+- **Sign Out**: The `SignOutButton` component handles sign-out flow
+
+## Security Best Practices
+
+<AccordionGroup>
+  <Accordion title="Use HTTPS in Production">
+    Always use HTTPS for production deployments to protect tokens in transit.
+  </Accordion>
+  
+  <Accordion title="Secure Token Storage">
+    The `@asgardeo/nextjs` package stores tokens securely in encrypted cookies. Never store tokens in localStorage or sessionStorage.
+  </Accordion>
+  
+  <Accordion title="Configure CORS Properly">
+    Ensure your API server has proper CORS configuration to only allow requests from your web application domain.
+  </Accordion>
+  
+  <Accordion title="Rotate Client Secrets">
+    Regularly rotate your Asgardeo client secrets in the Asgardeo console.
+  </Accordion>
+</AccordionGroup>
+
+## Troubleshooting
+
+### Redirect URI Mismatch
+
+If you see a redirect URI mismatch error, verify that the redirect URLs in your Asgardeo application settings match your environment variables.
+
+### Token Expiration
+
+If you receive 401 errors, your access token may have expired. The Asgardeo package should handle automatic token refresh, but you can manually check the session validity:
+
+```typescript
+const session = await getSession();
+if (!session) {
+  // Redirect to login
+}
+```
+
+### CORS Errors
+
+If you encounter CORS errors when making API requests, ensure your API server includes proper CORS headers. The API uses the `cors` package which should be configured in your server setup.
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="API Overview" icon="book" href="/api/overview">
+    Learn about the API structure and response formats
+  </Card>
+  <Card title="Company Endpoints" icon="building" href="/api/company">
+    Start making API calls to manage company data
+  </Card>
+</CardGroup>

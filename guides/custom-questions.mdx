@@ -1,0 +1,465 @@
+---
+title: Creating Custom Application Questions
+description: Add custom questions to your job application forms to gather specific information from candidates
+---
+
+This guide shows you how to create custom application questions, configure different question types, and use applicant responses in your hiring process.
+
+## Overview
+
+Custom questions allow you to:
+- Gather specific information beyond resumes
+- Screen candidates based on requirements
+- Collect salary expectations, availability, and other details
+- Add knockout questions to filter unqualified applicants
+
+## Question Types
+
+OpenATS supports five question types:
+
+| Type | Use Case | Example |
+|------|----------|----------|
+| **Short Answer** | Brief text responses | "What is your salary expectation?" |
+| **Long Answer** | Detailed text responses | "Describe your experience with API development" |
+| **Checkbox** | Multiple selections | "Which programming languages do you know?" |
+| **Radio Button** | Single selection | "What is your preferred work arrangement?" |
+| **Boolean** | Yes/No questions | "Are you authorized to work in the US?" |
+
+## Adding Custom Questions
+
+<Steps>
+  <Step title="Navigate to Job Questions">
+    1. Go to **Jobs** in the sidebar
+    2. Click on the job you want to configure
+    3. Click the **Custom Questions** tab
+  </Step>
+
+  <Step title="Add New Question">
+    Click **+ Add Custom Question** to open the question builder.
+  </Step>
+
+  <Step title="Select Question Type">
+    Choose from the dropdown:
+    - **Short Answer** - Single line text field
+    - **Long Answer** - Multi-line text area
+    - **Checkbox** - Multiple choice (can select multiple)
+    - **Radio Button** - Multiple choice (select one)  
+    - **Boolean** - Yes/No toggle
+
+    <Tip>
+    Use Short Answer for concise responses like salary or availability. Use Long Answer for questions requiring detailed explanations.
+    </Tip>
+  </Step>
+
+  <Step title="Enter Question Text">
+    Type your question in the **"Enter the question here"** field.
+
+    **Examples:**
+    ```text
+    Short Answer: "What Is Your Salary Expectation?"
+    Long Answer: "Describe your experience building RESTful APIs"
+    Checkbox: "Which of these technologies have you used professionally?"
+    Radio: "What is your current work authorization status?"
+    Boolean: "Are you willing to relocate?"
+    ```
+
+    <Note>
+    Write clear, specific questions. Avoid jargon or ambiguous phrasing.
+    </Note>
+  </Step>
+
+  <Step title="Configure Options (if applicable)">
+    For **Checkbox**, **Radio Button**, and **Boolean** questions:
+
+    1. Click **Setup Options & Logic**
+    2. Add options:
+       - Type option text (e.g., "Yes", "No", "Remote", "Hybrid")
+       - Click **+ Add Another Option** for more choices
+    3. Configure logic (optional):
+       - Mark correct answers for screening
+       - Set knockout options (auto-reject if selected)
+    4. Click **Save Logic**
+
+    **Example for Radio Button:**
+    ```text
+    Question: "What is your preferred work arrangement?"
+    Options:
+    - Remote
+    - Hybrid (2-3 days in office)
+    - On-site (5 days in office)
+    ```
+  </Step>
+
+  <Step title="Set Required Status">
+    Check **Required** to make the question mandatory.
+
+    <Warning>
+    Required questions must be answered before candidates can submit their application.
+    </Warning>
+  </Step>
+
+  <Step title="Save Question">
+    Click **Add Question** to add it to your application form.
+  </Step>
+</Steps>
+
+## Managing Existing Questions
+
+### Reordering Questions
+
+Questions appear on the application form in the order you set:
+
+1. Drag questions by the **⋮⋮** handle icon
+2. Drop them in the desired position
+3. The order updates automatically
+
+<Tip>
+Put the most important screening questions first to save candidates time if they don't qualify.
+</Tip>
+
+### Editing Questions
+
+1. Click the **edit** (pencil) icon on any question
+2. Modify the question text, type, or options
+3. Click **Save Changes**
+
+<Note>
+Changing a question type will delete existing answers from candidates who already applied.
+</Note>
+
+### Deleting Questions
+
+1. Click the **delete** (trash) icon on any question  
+2. Confirm the deletion
+
+<Warning>
+Deleting a question removes all candidate responses. This action cannot be undone.
+</Warning>
+
+## Question Examples by Job Type
+
+<AccordionGroup>
+  <Accordion title="Software Engineering">
+    **Short Answer:**
+    - What is your expected salary range?
+    - How many years of experience do you have with [Technology]?
+    - What is your GitHub username?
+
+    **Long Answer:**
+    - Describe a challenging technical problem you solved recently
+    - Explain your experience with microservices architecture
+    - What interests you about this role?
+
+    **Checkbox:**
+    - Which programming languages are you proficient in?
+      - ☐ Java
+      - ☐ Python
+      - ☐ JavaScript
+      - ☐ Go
+      - ☐ C++
+
+    **Radio:**
+    - What is your preferred development environment?
+      - ○ Linux
+      - ○ macOS
+      - ○ Windows
+
+    **Boolean:**
+    - Do you have experience leading engineering teams? (Yes/No)
+  </Accordion>
+
+  <Accordion title="Sales & Marketing">
+    **Short Answer:**
+    - What CRM platforms have you used?
+    - What is your typical sales cycle length?
+    - What industries have you sold to?
+
+    **Long Answer:**
+    - Describe your most successful sales campaign
+    - How do you approach cold outreach?
+    - What strategies do you use to close enterprise deals?
+
+    **Checkbox:**
+    - Which marketing channels have you managed?
+      - ☐ Email Marketing
+      - ☐ Social Media
+      - ☐ Content Marketing
+      - ☐ Paid Advertising
+      - ☐ SEO/SEM
+
+    **Radio:**
+    - What is your preferred sales methodology?
+      - ○ SPIN Selling
+      - ○ Challenger Sale
+      - ○ Solution Selling
+      - ○ Other
+
+    **Boolean:**
+    - Do you have experience with B2B SaaS sales? (Yes/No)
+  </Accordion>
+
+  <Accordion title="Customer Support">
+    **Short Answer:**
+    - What help desk software have you used?
+    - What languages do you speak fluently?
+    - What are your available working hours?
+
+    **Long Answer:**
+    - Describe how you handled a difficult customer situation
+    - How do you prioritize multiple support tickets?
+
+    **Checkbox:**
+    - Which support channels are you experienced with?
+      - ☐ Live Chat
+      - ☐ Email Support
+      - ☐ Phone Support
+      - ☐ Social Media
+
+    **Boolean:**
+    - Are you comfortable working weekend shifts? (Yes/No)
+    - Can you work in a 24/7 support rotation? (Yes/No)
+  </Accordion>
+</AccordionGroup>
+
+## Advanced: Knockout Questions
+
+Knockout questions automatically reject candidates who don't meet requirements:
+
+<Steps>
+  <Step title="Create a Boolean or Radio Question">
+    Example: "Are you authorized to work in the United States?"
+  </Step>
+
+  <Step title="Configure as Knockout">
+    In the options setup:
+    1. Mark which answers disqualify candidates
+    2. Set the auto-rejection email template
+    3. Enable **Auto-reject on wrong answer**
+  </Step>
+
+  <Step title="Test the Question">
+    Submit a test application with the disqualifying answer to verify:
+    - Candidate is moved to "Rejected" stage
+    - Rejection email is sent automatically
+  </Step>
+</Steps>
+
+<Warning>
+Use knockout questions carefully. Ensure they're truly mandatory requirements, not "nice to haves."
+</Warning>
+
+## Attaching Assessments to Application Forms
+
+You can require candidates to complete technical assessments as part of their application:
+
+<Steps>
+  <Step title="Create an Assessment">
+    First, create an assessment in **Assessments** section with your questions.
+  </Step>
+
+  <Step title="Attach to Job">
+    From the Custom Questions tab:
+    1. Click **Attach Assessment**
+    2. Select the assessment from the dropdown
+    3. Choose when to trigger it:
+       - **On Application** - Immediately when they apply
+       - **Screening Stage** - When moved to screening
+       - **Interview Stage** - When moved to interview
+  </Step>
+
+  <Step title="Configure Assessment">
+    Set:
+    - **Time limit** (e.g., 60 minutes)
+    - **Pass threshold** (e.g., 70%)
+    - **Auto-reject on fail** (optional)
+  </Step>
+</Steps>
+
+### API Method for Attaching Assessments
+
+```javascript
+POST /api/jobs/{jobId}/custom-questions/attach-assessment
+
+{
+  "assessmentId": 5,
+  "triggerStageId": 2  // Stage that triggers the assessment
+}
+```
+
+## Viewing Candidate Responses
+
+After candidates apply, view their answers:
+
+1. Go to **Candidates**
+2. Click on a candidate
+3. Scroll to **Custom Question Answers** section
+4. Responses appear with the question text
+
+<Tip>
+Use responses to pre-screen candidates before reviewing full resumes.
+</Tip>
+
+## Best Practices
+
+<AccordionGroup>
+  <Accordion title="Keep Questions Focused">
+    ✅ **Good questions:**
+    - "What is your expected salary range?"
+    - "How many years of Python experience do you have?"
+    - "Are you willing to travel up to 25%?"
+
+    ❌ **Poor questions:**
+    - "Tell us about yourself" (too broad)
+    - "Why should we hire you?" (covered in cover letter)
+    - "What's your greatest weakness?" (not actionable)
+  </Accordion>
+
+  <Accordion title="Limit the Number of Questions">
+    Keep application forms short:
+    - **3-5 questions** for most roles
+    - **7-10 questions** maximum for specialized roles
+    - Every extra question reduces completion rates
+
+    Ask yourself: "Will this answer affect our hiring decision?"
+  </Accordion>
+
+  <Accordion title="Use Required Sparingly">
+    Only mark questions as required if they're truly mandatory:
+    - Legal requirements (work authorization)
+    - Deal-breakers (salary expectations too high)
+    - Essential qualifications
+
+    Optional questions gather nice-to-have information without forcing candidates.
+  </Accordion>
+
+  <Accordion title="Test Your Application Form">
+    Before publishing:
+    1. Submit a test application yourself
+    2. Check question clarity and ordering
+    3. Verify required validation works
+    4. Test on mobile devices
+    5. Time how long it takes to complete
+
+    Goal: Under 10 minutes for complete application
+  </Accordion>
+
+  <Accordion title="Be Transparent About Usage">
+    Tell candidates how you'll use their responses:
+    ```text
+    "We ask about salary expectations to ensure our 
+    compensation aligns with your requirements before 
+    proceeding with interviews."
+    ```
+
+    Transparency increases completion rates and trust.
+  </Accordion>
+</AccordionGroup>
+
+## Question Schema Reference
+
+When creating questions via API:
+
+```typescript
+{
+  "title": string,              // Question text (required, max 500 chars)
+  "questionType": enum,         // "short_answer" | "long_answer" | "checkbox" | "radio"
+  "isRequired": boolean,        // Default: false
+  "position": number,           // Display order (1-based)
+  "options": [                  // For checkbox/radio only
+    {
+      "label": string,          // Option text (required)
+      "isCorrect": boolean,     // For screening questions
+      "position": number        // Option order
+    }
+  ]
+}
+```
+
+### Validation Rules
+
+- **title**: 1-500 characters, required
+- **questionType**: Must be valid enum value
+- **options**: Required for checkbox/radio (minimum 2 options)
+- **position**: Must be unique within the job
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="Question Not Appearing on Application Form">
+    Check:
+    - Question is saved (not in draft mode)
+    - Job is published/active
+    - Question position is set
+    - Browser cache cleared
+  </Accordion>
+
+  <Accordion title="Cannot Add Options to Question">
+    Ensure:
+    - Question type is checkbox, radio, or boolean
+    - You clicked "Setup Options & Logic" button
+    - Each option has text (cannot be empty)
+  </Accordion>
+
+  <Accordion title="Candidate Responses Not Saving">
+    Verify:
+    - Question exists before candidate applied
+    - Required questions are answered
+    - File upload size limits not exceeded
+    - No special characters causing validation errors
+  </Accordion>
+</AccordionGroup>
+
+## API Reference
+
+### Get Custom Questions
+```javascript
+GET /api/jobs/{jobId}/custom-questions
+```
+
+### Create Custom Question
+```javascript
+POST /api/jobs/{jobId}/custom-questions
+
+Body:
+{
+  "title": "What is your salary expectation?",
+  "questionType": "short_answer",
+  "isRequired": true,
+  "position": 1
+}
+```
+
+### Update Custom Question
+```javascript
+PUT /api/jobs/{jobId}/custom-questions/{questionId}
+
+Body:
+{
+  "title": "Updated question text",
+  "isRequired": false
+}
+```
+
+### Delete Custom Question  
+```javascript
+DELETE /api/jobs/{jobId}/custom-questions/{questionId}
+```
+
+For complete API documentation, see [Custom Questions API Reference](/api-reference/custom-questions).
+
+## Related Guides
+
+<CardGroup cols={2}>
+  <Card title="Creating Jobs" icon="briefcase" href="/guides/creating-jobs">
+    Set up job postings with application forms
+  </Card>
+  <Card title="Managing Candidates" icon="users" href="/guides/managing-candidates">
+    Review candidate responses and applications
+  </Card>
+  <Card title="Assessments" icon="clipboard-check" href="/features/assessments">
+    Create technical skills assessments
+  </Card>
+  <Card title="Email Templates" icon="envelope" href="/guides/email-templates">
+    Configure automated responses
+  </Card>
+</CardGroup>

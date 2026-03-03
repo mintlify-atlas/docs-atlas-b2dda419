@@ -1,0 +1,372 @@
+---
+title: 'Candidates'
+description: 'Candidate profiles, public applications, and pipeline movement'
+---
+
+## Submit Job Application
+
+<CodeGroup>
+```http
+POST /candidates/jobs/{jobId}/apply
+```
+</CodeGroup>
+
+Public endpoint for candidates to apply for a job opening.
+
+### Path Parameters
+
+<ParamField path="jobId" type="integer" required>
+  Job ID to apply for
+</ParamField>
+
+### Request Body
+
+<ParamField body="firstName" type="string" required>
+  Candidate's first name (1-100 characters)
+</ParamField>
+
+<ParamField body="lastName" type="string" required>
+  Candidate's last name (1-100 characters)
+</ParamField>
+
+<ParamField body="email" type="string" required>
+  Valid email address (max 255 characters)
+</ParamField>
+
+<ParamField body="phone" type="string" optional>
+  Phone number (max 50 characters)
+</ParamField>
+
+<ParamField body="resumeUrl" type="string" optional>
+  Valid URL to uploaded resume (max 1000 characters)
+</ParamField>
+
+<ParamField body="customAnswers" type="array" optional>
+  Array of answers to custom application questions
+  
+  <Expandable title="customAnswer properties">
+    <ParamField body="questionId" type="integer" required>
+      Custom question ID
+    </ParamField>
+    
+    <ParamField body="answerText" type="string" optional>
+      Text answer for open-ended questions
+    </ParamField>
+    
+    <ParamField body="optionIds" type="array" optional>
+      Array of selected option IDs for multiple choice questions
+    </ParamField>
+  </Expandable>
+</ParamField>
+
+### Response
+
+<ResponseField name="data" type="object">
+  Created candidate application object
+</ResponseField>
+
+### Example Request
+
+```bash
+curl -X POST http://localhost:8080/api/candidates/jobs/1/apply \
+  -H "Content-Type: application/json" \
+  -d '{
+    "firstName": "John",
+    "lastName": "Doe",
+    "email": "john.doe@example.com",
+    "phone": "+1 555 123 4567",
+    "resumeUrl": "https://r2.openats.com/resumes/john_doe.pdf",
+    "customAnswers": [
+      {
+        "questionId": 1,
+        "answerText": "I have 5 years of experience with Node.js"
+      },
+      {
+        "questionId": 2,
+        "optionIds": [3, 5, 7]
+      }
+    ]
+  }'
+```
+
+### Error Codes
+
+<ResponseField name="400" type="error">
+  Invalid job ID OR Validation failed
+</ResponseField>
+
+<ResponseField name="404" type="error">
+  Job not found
+</ResponseField>
+
+<ResponseField name="500" type="error">
+  Failed to submit application
+</ResponseField>
+
+---
+
+## List Candidates for Job
+
+<CodeGroup>
+```http
+GET /candidates/jobs/{jobId}
+```
+</CodeGroup>
+
+Retrieve all candidates who applied for a specific job, with optional filtering.
+
+### Path Parameters
+
+<ParamField path="jobId" type="integer" required>
+  Job ID
+</ParamField>
+
+### Query Parameters
+
+<ParamField query="stageId" type="integer" optional>
+  Filter by specific pipeline stage
+</ParamField>
+
+<ParamField query="search" type="string" optional>
+  Search by candidate name or email
+</ParamField>
+
+### Response
+
+<ResponseField name="data" type="array">
+  Array of candidate objects
+  
+  <Expandable title="candidate properties">
+    <ResponseField name="id" type="integer">
+      Candidate identifier
+    </ResponseField>
+    
+    <ResponseField name="firstName" type="string">
+      First name
+    </ResponseField>
+    
+    <ResponseField name="lastName" type="string">
+      Last name
+    </ResponseField>
+    
+    <ResponseField name="email" type="string">
+      Email address
+    </ResponseField>
+    
+    <ResponseField name="phone" type="string" optional>
+      Phone number
+    </ResponseField>
+    
+    <ResponseField name="resumeUrl" type="string" optional>
+      Resume URL
+    </ResponseField>
+    
+    <ResponseField name="currentStageId" type="integer">
+      Current pipeline stage ID
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+### Example Request
+
+```bash
+# Get all candidates for a job
+curl -X GET http://localhost:8080/api/candidates/jobs/1
+
+# Filter by stage
+curl -X GET "http://localhost:8080/api/candidates/jobs/1?stageId=3"
+
+# Search by name or email
+curl -X GET "http://localhost:8080/api/candidates/jobs/1?search=john"
+```
+
+### Error Codes
+
+<ResponseField name="400" type="error">
+  Invalid job ID
+</ResponseField>
+
+<ResponseField name="500" type="error">
+  Failed to fetch candidates
+</ResponseField>
+
+---
+
+## Get Candidate Profile
+
+<CodeGroup>
+```http
+GET /candidates/{id}
+```
+</CodeGroup>
+
+Retrieve detailed information for a specific candidate including application history.
+
+### Path Parameters
+
+<ParamField path="id" type="integer" required>
+  Candidate ID
+</ParamField>
+
+### Response
+
+<ResponseField name="data" type="object">
+  Full candidate profile object including:
+  
+  <Expandable title="properties">
+    <ResponseField name="id" type="integer">
+      Candidate identifier
+    </ResponseField>
+    
+    <ResponseField name="firstName" type="string">
+      First name
+    </ResponseField>
+    
+    <ResponseField name="lastName" type="string">
+      Last name
+    </ResponseField>
+    
+    <ResponseField name="email" type="string">
+      Email address
+    </ResponseField>
+    
+    <ResponseField name="phone" type="string" optional>
+      Phone number
+    </ResponseField>
+    
+    <ResponseField name="resumeUrl" type="string" optional>
+      Resume URL
+    </ResponseField>
+    
+    <ResponseField name="jobId" type="integer">
+      Applied job ID
+    </ResponseField>
+    
+    <ResponseField name="currentStageId" type="integer">
+      Current pipeline stage
+    </ResponseField>
+    
+    <ResponseField name="customAnswers" type="array" optional>
+      Answers to custom questions
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+### Example Request
+
+```bash
+curl -X GET http://localhost:8080/api/candidates/1
+```
+
+### Error Codes
+
+<ResponseField name="400" type="error">
+  Invalid candidate ID
+</ResponseField>
+
+<ResponseField name="404" type="error">
+  Candidate not found
+</ResponseField>
+
+<ResponseField name="500" type="error">
+  Failed to fetch candidate
+</ResponseField>
+
+---
+
+## Move Candidate to Stage
+
+<CodeGroup>
+```http
+PUT /candidates/{id}/stage
+```
+</CodeGroup>
+
+Advance or move a candidate to a different pipeline stage. Moving to an "assessment" stage may trigger an automatic invite. Moving to an "offer" stage may generate a draft offer.
+
+### Path Parameters
+
+<ParamField path="id" type="integer" required>
+  Candidate ID
+</ParamField>
+
+### Request Body
+
+<ParamField body="newStageId" type="integer" required>
+  Target pipeline stage ID
+</ParamField>
+
+<ParamField body="movedBy" type="integer" optional>
+  User ID of the recruiter performing the move (defaults to 1)
+</ParamField>
+
+### Response
+
+<ResponseField name="data" type="object">
+  Updated candidate object with new stage
+</ResponseField>
+
+### Example Request
+
+```bash
+curl -X PUT http://localhost:8080/api/candidates/1/stage \
+  -H "Content-Type: application/json" \
+  -d '{
+    "newStageId": 5,
+    "movedBy": 2
+  }'
+```
+
+### Error Codes
+
+<ResponseField name="400" type="error">
+  Invalid candidate ID OR Validation failed OR Stage move error
+</ResponseField>
+
+<ResponseField name="500" type="error">
+  Failed to move candidate
+</ResponseField>
+
+---
+
+## Delete Candidate
+
+<CodeGroup>
+```http
+DELETE /candidates/{id}
+```
+</CodeGroup>
+
+Permanently delete a candidate from the system.
+
+### Path Parameters
+
+<ParamField path="id" type="integer" required>
+  Candidate ID to delete
+</ParamField>
+
+### Response
+
+<ResponseField name="data" type="object">
+  Deleted candidate object
+</ResponseField>
+
+### Example Request
+
+```bash
+curl -X DELETE http://localhost:8080/api/candidates/1
+```
+
+### Error Codes
+
+<ResponseField name="400" type="error">
+  Invalid candidate ID
+</ResponseField>
+
+<ResponseField name="404" type="error">
+  Candidate not found
+</ResponseField>
+
+<ResponseField name="500" type="error">
+  Failed to delete candidate
+</ResponseField>

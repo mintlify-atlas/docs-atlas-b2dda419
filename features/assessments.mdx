@@ -1,0 +1,416 @@
+---
+title: Technical Assessments
+description: Create and manage skills assessments to evaluate candidate abilities
+icon: clipboard-check
+---
+
+## Overview
+
+Technical Assessments in OpenATS help you objectively evaluate candidate skills before investing time in interviews. Create custom tests with multiple question types, automatic scoring, and pass/fail thresholds.
+
+## Assessment Basics
+
+### Creating an Assessment
+
+Build assessments with these core properties:
+
+<CardGroup cols={2}>
+  <Card title="Title & Description" icon="heading">
+    Clear name and overview (e.g., "Senior React Developer Test")
+  </Card>
+  <Card title="Time Limit" icon="clock">
+    Maximum time in minutes for completion (e.g., 60 minutes)
+  </Card>
+  <Card title="Pass Score" icon="percent">
+    Minimum percentage required to pass (e.g., 70%)
+  </Card>
+  <Card title="Questions" icon="list">
+    Add multiple questions with different types and point values
+  </Card>
+</CardGroup>
+
+<Note>
+  Time limits are enforced strictly. Once started, candidates must complete the assessment within the allocated time or it will auto-submit.
+</Note>
+
+### Assessment Questions
+
+Add questions to evaluate specific skills or knowledge:
+
+<Steps>
+  <Step title="Set question title">
+    The main question text candidates will answer
+  </Step>
+  <Step title="Add description (optional)">
+    Provide context, code snippets, or clarifying details
+  </Step>
+  <Step title="Choose question type">
+    Select Short Answer or Multiple Choice
+  </Step>
+  <Step title="Assign point value">
+    Weight questions by difficulty (default: 1 point)
+  </Step>
+  <Step title="Set position">
+    Control the order questions appear
+  </Step>
+</Steps>
+
+## Question Types
+
+### Short Answer
+
+Open-ended text responses for:
+- Code snippets or solutions
+- Explanation of concepts
+- Problem-solving approaches
+- Architecture design descriptions
+
+<Tip>
+  Short answer questions require manual review and scoring by your team. They're ideal for evaluating thought process and communication skills.
+</Tip>
+
+**Example Short Answer Question:**
+```
+Title: Explain React Hooks
+Description: Describe the purpose of React Hooks and provide an example of when you'd use useState vs useEffect.
+Points: 5
+```
+
+### Multiple Choice
+
+Questions with predefined answer options:
+- Technical knowledge verification
+- Best practices understanding
+- Tool/framework familiarity
+- Debugging scenarios
+
+<Note>
+  Multiple choice questions are automatically scored based on the correct answers you define.
+</Note>
+
+**Example Multiple Choice Question:**
+```
+Title: Which HTTP status code indicates a successful request?
+Options:
+  - 200 OK ✓ (Correct)
+  - 404 Not Found
+  - 500 Internal Server Error  
+  - 301 Moved Permanently
+Points: 1
+```
+
+## Creating Multiple Choice Questions
+
+Multiple choice questions require at least 2 options:
+
+<Steps>
+  <Step title="Add question text">
+    Write clear, unambiguous question
+  </Step>
+  <Step title="Create options">
+    Add 2 or more answer choices
+  </Step>
+  <Step title="Mark correct answers">
+    Flag one or more options as correct
+  </Step>
+  <Step title="Set option positions">
+    Control display order (or randomize)
+  </Step>
+</Steps>
+
+### Option Configuration
+
+Each option includes:
+
+| Property | Description | Example |
+|----------|-------------|----------|
+| **Label** | The answer text | "Use async/await" |
+| **Is Correct** | Whether this is a right answer | `true` or `false` |
+| **Position** | Display order | `1`, `2`, `3`... |
+
+<Warning>
+  Multiple choice questions must have at least one correct answer. Questions without correct answers will fail validation.
+</Warning>
+
+## Point System & Scoring
+
+### Assigning Points
+
+Weight questions based on difficulty or importance:
+
+```
+Easy question: 1 point
+Medium question: 3 points
+Hard question: 5 points
+```
+
+### Total Score Calculation
+
+OpenATS tracks three score values:
+
+<CardGroup cols={3}>
+  <Card title="Raw Score" icon="calculator">
+    Total points earned by candidate
+  </Card>
+  <Card title="Total Possible" icon="hashtag">
+    Sum of all question point values
+  </Card>
+  <Card title="Percentage" icon="percent">
+    (Raw Score ÷ Total Possible) × 100
+  </Card>
+</CardGroup>
+
+**Example:**
+```
+Question 1 (Multiple Choice): 2/2 points
+Question 2 (Multiple Choice): 1/1 points  
+Question 3 (Short Answer): 3/5 points
+
+Raw Score: 6 points
+Total Possible: 8 points
+Percentage: 75%
+```
+
+### Pass/Fail Determination
+
+<Steps>
+  <Step title="Set pass threshold">
+    Define minimum percentage (0-100) when creating assessment
+  </Step>
+  <Step title="Candidate completes">
+    System calculates final percentage score
+  </Step>
+  <Step title="Automatic evaluation">
+    If percentage ≥ pass score: PASS, otherwise: FAIL
+  </Step>
+  <Step title="Result tracking">
+    Pass/fail status stored with attempt record
+  </Step>
+</Steps>
+
+## Candidate Assessment Attempts
+
+### Sending Assessments
+
+Assessments are triggered when candidates move to assessment-enabled pipeline stages:
+
+<Steps>
+  <Step title="Configure stage">
+    Attach assessment to a pipeline stage
+  </Step>
+  <Step title="Move candidate">
+    Place candidate in that stage
+  </Step>
+  <Step title="Automatic invitation">
+    System generates unique assessment link and sends email
+  </Step>
+  <Step title="Candidate access">
+    Candidate clicks link to begin assessment
+  </Step>
+</Steps>
+
+### Attempt Lifecycle
+
+<Tabs>
+  <Tab title="Pending">
+    **Status:** Invitation sent, not yet started
+    
+    **Actions:**
+    - Candidate can access via unique token
+    - Link expires after configured time
+    - No time counting down yet
+  </Tab>
+  <Tab title="In Progress">
+    **Status:** Candidate has started the assessment
+    
+    **Actions:**
+    - Time limit is actively counting
+    - Answers are being recorded
+    - Cannot pause or restart
+  </Tab>
+  <Tab title="Completed">
+    **Status:** Candidate submitted or time expired
+    
+    **Actions:**
+    - Automatic scoring of multiple choice
+    - Manual review needed for short answers
+    - Pass/fail calculated
+  </Tab>
+  <Tab title="Expired">
+    **Status:** Time limit exceeded without submission
+    
+    **Actions:**
+    - Partial answers recorded
+    - Scored as incomplete
+    - Typically marked as failed
+  </Tab>
+</Tabs>
+
+### Unique Assessment Tokens
+
+Each assessment attempt includes:
+- **Unique token**: Secure, unguessable access code
+- **Expiration time**: When the invitation link becomes invalid
+- **Single use**: Token cannot be reused after completion
+
+<Warning>
+  Assessment links expire based on the expiry time set when the invitation is sent. Candidates cannot access expired assessments.
+</Warning>
+
+## Recording Candidate Information
+
+When candidates access assessments, they may need to verify their identity:
+
+<CardGroup cols={2}>
+  <Card title="Name Confirmation" icon="user">
+    Candidate enters their full name
+    
+    Stored as `candidateNameInput`
+  </Card>
+  <Card title="Email Verification" icon="envelope">
+    Candidate confirms email address
+    
+    Stored as `candidateEmailInput`
+  </Card>
+</CardGroup>
+
+<Note>
+  This identity verification helps ensure the right person completed the assessment, especially important for remote testing.
+</Note>
+
+## Viewing Assessment Results
+
+Access comprehensive results for each attempt:
+
+### Attempt Summary
+
+- Candidate information (name, email)
+- Start time and completion time
+- Duration taken
+- Raw score, total possible, percentage
+- Pass/fail status
+- Overall attempt status
+
+### Individual Answers
+
+For each question:
+- Question text and type
+- Candidate's answer (text or selected options)
+- Points earned vs. points possible
+- For multiple choice: correct/incorrect indication
+
+<Tip>
+  Review short answer responses carefully. Automatic scoring only applies to multiple choice, so short answers need manual evaluation.
+</Tip>
+
+## Job Custom Questions
+
+In addition to formal assessments, add screening questions directly to job applications:
+
+### Question Configuration
+
+<CardGroup cols={2}>
+  <Card title="Question Text" icon="message">
+    The question candidates see on the application form
+  </Card>
+  <Card title="Question Type" icon="shapes">
+    Short Answer or Multiple Choice
+  </Card>
+  <Card title="Required" icon="asterisk">
+    Whether candidates must answer to submit application
+  </Card>
+  <Card title="Position" icon="arrow-down-1-9">
+    Order the question appears on the form
+  </Card>
+</CardGroup>
+
+### Custom vs. Assessment Questions
+
+| Feature | Custom Questions | Assessment Questions |
+|---------|------------------|---------------------|
+| **Timing** | During application | After application, in pipeline |
+| **Scoring** | Not scored | Automatic or manual scoring |
+| **Purpose** | Initial screening | Skills evaluation |
+| **Required** | Optional or required | Triggered by stage |
+| **Validation** | Basic validation | Pass/fail threshold |
+
+<Note>
+  Use custom questions for basic screening ("Do you have work authorization?") and assessments for technical evaluation.
+</Note>
+
+## Best Practices
+
+<AccordionGroup>
+  <Accordion title="Set reasonable time limits">
+    Allow enough time for candidates to thoughtfully answer without feeling rushed. 45-90 minutes is typical for technical assessments.
+  </Accordion>
+  
+  <Accordion title="Balance question types">
+    Mix multiple choice (quick, auto-graded) with short answer (deeper evaluation) for comprehensive assessment.
+  </Accordion>
+  
+  <Accordion title="Weight questions appropriately">
+    Assign higher point values to complex questions that better indicate skill level.
+  </Accordion>
+  
+  <Accordion title="Test your assessments">
+    Complete your own assessments to check clarity, difficulty, and time requirements.
+  </Accordion>
+  
+  <Accordion title="Review pass score regularly">
+    Adjust thresholds based on candidate performance and hiring success rates.
+  </Accordion>
+  
+  <Accordion title="Provide clear instructions">
+    Use question descriptions to explain expected format, especially for code submissions.
+  </Accordion>
+</AccordionGroup>
+
+## Assessment Management
+
+### Updating Assessments
+
+Modify assessment details:
+- Title and description
+- Time limit (applies to new attempts only)
+- Pass score threshold
+
+<Warning>
+  Changing an assessment affects new attempts but not completed ones. Historical scores remain unchanged.
+</Warning>
+
+### Managing Questions
+
+**Add Questions:** Build comprehensive tests over time
+
+**Update Questions:** Fix typos, improve clarity, adjust points
+
+**Delete Questions:** Remove outdated or ineffective questions
+
+<Warning>
+  Deleting questions affects scoring calculations. If possible, archive assessments instead of modifying ones actively in use.
+</Warning>
+
+### Deleting Assessments
+
+Removing an assessment will:
+- Delete all associated questions and options
+- Preserve historical attempt records
+- Remove from available assessments for new stages
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Attach to Pipeline Stages" icon="diagram-project" href="/features/pipeline-stages">
+    Configure assessment triggers in your hiring flow
+  </Card>
+  <Card title="View Candidate Results" icon="user-check" href="/features/candidate-tracking">
+    Review assessment attempts and scores
+  </Card>
+  <Card title="Create Email Templates" icon="envelope" href="/features/templates">
+    Design assessment invitation emails
+  </Card>
+  <Card title="Generate Offers" icon="file-contract" href="/features/offers">
+    Move successful candidates to offer stage
+  </Card>
+</CardGroup>

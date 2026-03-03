@@ -1,0 +1,534 @@
+---
+title: Email & Document Templates
+description: Create reusable templates for candidate communications and offer letters
+icon: envelope
+---
+
+## Overview
+
+Templates in OpenATS provide a flexible, visual way to create professional emails and documents for candidate communications. Build reusable templates with a block-based editor that ensures consistent branding and messaging across your hiring process.
+
+## Template Basics
+
+### Creating a Template
+
+Every template requires:
+
+<CardGroup cols={2}>
+  <Card title="Name" icon="tag">
+    Internal reference name (e.g., "Senior Engineer Offer")
+    
+    Not visible to candidates
+  </Card>
+  <Card title="Type" icon="shapes">
+    Template category: Email or Offer Letter
+    
+    Determines where template is used
+  </Card>
+  <Card title="Subject" icon="heading">
+    Email subject line or document title
+    
+    Supports variable placeholders
+  </Card>
+  <Card title="Body Content" icon="blocks">
+    Visual block-based content
+    
+    Build with multiple content blocks
+  </Card>
+</CardGroup>
+
+<Note>
+  Templates are created by specific users and tracked for audit purposes, but can be used by the entire organization.
+</Note>
+
+## Template Types
+
+### Email Templates
+
+Used for candidate communications throughout the hiring process:
+
+**Common Email Templates:**
+- Application received confirmation
+- Interview invitation
+- Interview reminder
+- Assessment invitation
+- Rejection notification
+- Reference request
+- Onboarding welcome
+
+### Offer Letter Templates
+
+Used for generating formal job offers:
+
+**Offer Template Elements:**
+- Company letterhead
+- Position details
+- Compensation breakdown
+- Benefits overview
+- Start date and next steps
+- Acceptance instructions
+
+<Tip>
+  Create separate offer templates for different roles (executive, engineering, sales) or employment types (full-time, contract, intern) to include role-specific details.
+</Tip>
+
+## Content Block System
+
+Build template bodies using flexible content blocks stored as JSON:
+
+### Available Block Types
+
+<Tabs>
+  <Tab title="Heading">
+    **Purpose:** Section titles and headers
+    
+    **Properties:**
+    - `type`: "heading"
+    - `content`: The heading text
+    
+    **Example:**
+    ```json
+    {
+      "type": "heading",
+      "content": "Interview Invitation"
+    }
+    ```
+  </Tab>
+  
+  <Tab title="Text">
+    **Purpose:** Body paragraphs and main content
+    
+    **Properties:**
+    - `type`: "text"
+    - `content`: Paragraph text (supports variables)
+    
+    **Example:**
+    ```json
+    {
+      "type": "text",
+      "content": "Dear {{candidate.firstName}}, we are pleased to invite you to interview for the {{job.title}} position."
+    }
+    ```
+  </Tab>
+  
+  <Tab title="Button">
+    **Purpose:** Call-to-action links
+    
+    **Properties:**
+    - `type`: "button"
+    - `label`: Button text
+    - `url`: Link destination
+    
+    **Example:**
+    ```json
+    {
+      "type": "button",
+      "label": "Schedule Interview",
+      "url": "https://calendly.com/company/interview"
+    }
+    ```
+  </Tab>
+  
+  <Tab title="Image">
+    **Purpose:** Logos, graphics, or visual elements
+    
+    **Properties:**
+    - `type`: "image"
+    - `url`: Image URL
+    - `alt`: Alt text (optional)
+    
+    **Example:**
+    ```json
+    {
+      "type": "image",
+      "url": "https://cdn.company.com/logo.png",
+      "alt": "Company Logo"
+    }
+    ```
+  </Tab>
+  
+  <Tab title="Divider">
+    **Purpose:** Visual separation between sections
+    
+    **Properties:**
+    - `type`: "divider"
+    
+    **Example:**
+    ```json
+    {
+      "type": "divider"
+    }
+    ```
+  </Tab>
+  
+  <Tab title="Spacer">
+    **Purpose:** Add vertical spacing
+    
+    **Properties:**
+    - `type`: "spacer"
+    - `height`: Pixels of space
+    
+    **Example:**
+    ```json
+    {
+      "type": "spacer",
+      "height": 20
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Building Template Content
+
+### Block Composition
+
+Combine blocks to create rich, professional templates:
+
+**Example Offer Letter Template:**
+```json
+[
+  {
+    "type": "image",
+    "url": "https://company.com/letterhead.png",
+    "alt": "Company Letterhead"
+  },
+  {
+    "type": "spacer",
+    "height": 30
+  },
+  {
+    "type": "heading",
+    "content": "Offer of Employment"
+  },
+  {
+    "type": "text",
+    "content": "Dear {{candidate.firstName}} {{candidate.lastName}},"
+  },
+  {
+    "type": "text",
+    "content": "We are pleased to offer you the position of {{job.title}} with a salary of {{offer.salary}} {{offer.currency}} per {{offer.payFrequency}}."
+  },
+  {
+    "type": "divider"
+  },
+  {
+    "type": "heading",
+    "content": "Start Date"
+  },
+  {
+    "type": "text",
+    "content": "Your employment will begin on {{offer.startDate}}."
+  },
+  {
+    "type": "spacer",
+    "height": 20
+  },
+  {
+    "type": "button",
+    "label": "Accept Offer",
+    "url": "{{offer.acceptUrl}}"
+  }
+]
+```
+
+<Tip>
+  Use spacers and dividers strategically to create visual hierarchy and improve readability.
+</Tip>
+
+## Variable Placeholders
+
+Templates support dynamic content through variable placeholders:
+
+### Candidate Variables
+
+```handlebars
+{{candidate.firstName}}
+{{candidate.lastName}}
+{{candidate.email}}
+{{candidate.phone}}
+```
+
+### Job Variables
+
+```handlebars
+{{job.title}}
+{{job.department}}
+{{job.location}}
+{{job.employmentType}}
+```
+
+### Offer Variables
+
+```handlebars
+{{offer.salary}}
+{{offer.currency}}
+{{offer.payFrequency}}
+{{offer.startDate}}
+{{offer.expiryDate}}
+```
+
+### Company Variables
+
+```handlebars
+{{company.name}}
+{{company.address}}
+{{company.website}}
+```
+
+### User Variables
+
+```handlebars
+{{hiring_manager.firstName}}
+{{hiring_manager.lastName}}
+{{hiring_manager.email}}
+{{hiring_manager.title}}
+```
+
+### Assessment Variables
+
+```handlebars
+{{assessment.title}}
+{{assessment.timeLimit}}
+{{assessment.accessUrl}}
+{{assessment.expiryDate}}
+```
+
+<Note>
+  Variables are automatically replaced with actual data when the template is used to send an email or generate a document.
+</Note>
+
+## Using Templates
+
+### In Pipeline Stages
+
+Templates are assigned to pipeline stages for automatic use:
+
+**Offer Stages:**
+- Select offer template
+- Template renders when candidate reaches stage
+- Compensation variables auto-filled from job/offer
+
+**Rejection Stages:**
+- Select rejection email template  
+- Email sent when candidate moved to stage
+- Maintains professional candidate experience
+
+### In Offer Creation
+
+When creating offers manually:
+
+<Steps>
+  <Step title="Select template (optional)">
+    Choose an offer letter template
+  </Step>
+  <Step title="Fill offer details">
+    Enter salary, dates, and other specifics
+  </Step>
+  <Step title="Generate preview">
+    System renders template with actual data
+  </Step>
+  <Step title="Review and customize">
+    Make any final adjustments
+  </Step>
+  <Step title="Send to candidate">
+    Deliver the rendered offer
+  </Step>
+</Steps>
+
+## Managing Templates
+
+### Viewing Templates
+
+Access your template library to:
+- Browse all templates by type
+- Search by name or content
+- See who created each template
+- Check when templates were last updated
+
+### Editing Templates
+
+Update existing templates:
+
+<Warning>
+  Changes to templates affect future use only. Already-sent emails and generated offers preserve their original rendered content.
+</Warning>
+
+**What you can edit:**
+- Template name
+- Subject line
+- Body content blocks
+- Add/remove/reorder blocks
+
+**What you cannot edit:**
+- Template type (email vs. offer)
+- Creator
+- Creation date
+
+### Deleting Templates
+
+Removing templates:
+
+**Impact on existing records:**
+- Pipeline stages: Template reference set to null
+- Offers: `templateId` set to null
+- Rendered content: Preserved in `renderedHtml`
+
+<Note>
+  Deleting a template does not affect previously sent emails or offers. The rendered HTML is stored separately and remains intact.
+</Note>
+
+## Template Best Practices
+
+<AccordionGroup>
+  <Accordion title="Use clear, descriptive names">
+    Name templates for their purpose and audience (e.g., "Phone Screen Invite - Engineering" vs. just "Interview Email").
+  </Accordion>
+  
+  <Accordion title="Start with company branding">
+    Include logo or letterhead image blocks at the top for professional appearance.
+  </Accordion>
+  
+  <Accordion title="Keep content scannable">
+    Use headings to break up long content. Recipients skim before reading in detail.
+  </Accordion>
+  
+  <Accordion title="Test variable substitution">
+    Send test emails to verify all placeholders render correctly with real data.
+  </Accordion>
+  
+  <Accordion title="Include clear calls-to-action">
+    Use button blocks for important actions like scheduling interviews or accepting offers.
+  </Accordion>
+  
+  <Accordion title="Maintain tone consistency">
+    Ensure all templates reflect your employer brand voice - friendly, formal, enthusiastic, etc.
+  </Accordion>
+  
+  <Accordion title="Review regularly">
+    Update templates periodically to ensure information (benefits, policies, contact info) stays current.
+  </Accordion>
+  
+  <Accordion title="Version important templates">
+    Create dated versions of offer templates if terms change to track what was offered when.
+  </Accordion>
+</AccordionGroup>
+
+## Example Templates
+
+### Application Received Email
+
+**Subject:** `Application Received - {{job.title}}`
+
+**Body:**
+```json
+[
+  {
+    "type": "heading",
+    "content": "Thank You for Applying"
+  },
+  {
+    "type": "text",
+    "content": "Hi {{candidate.firstName}}, thank you for applying to the {{job.title}} position at {{company.name}}."
+  },
+  {
+    "type": "text",
+    "content": "We've received your application and our team will review it shortly. If your skills and experience match our requirements, we'll reach out to schedule an interview."
+  },
+  {
+    "type": "divider"
+  },
+  {
+    "type": "text",
+    "content": "Best regards,\n{{company.name}} Talent Team"
+  }
+]
+```
+
+### Technical Assessment Invitation
+
+**Subject:** `Technical Assessment - {{job.title}} Position`
+
+**Body:**
+```json
+[
+  {
+    "type": "heading",
+    "content": "Next Step: Technical Assessment"
+  },
+  {
+    "type": "text",
+    "content": "Hi {{candidate.firstName}}, we'd like to invite you to complete a technical assessment for the {{job.title}} role."
+  },
+  {
+    "type": "text",
+    "content": "Assessment: {{assessment.title}}\nTime Limit: {{assessment.timeLimit}} minutes\nExpires: {{assessment.expiryDate}}"
+  },
+  {
+    "type": "spacer",
+    "height": 20
+  },
+  {
+    "type": "button",
+    "label": "Start Assessment",
+    "url": "{{assessment.accessUrl}}"
+  },
+  {
+    "type": "spacer",
+    "height": 20
+  },
+  {
+    "type": "text",
+    "content": "Good luck!\n{{hiring_manager.firstName}}"
+  }
+]
+```
+
+### Rejection Email (After Interview)
+
+**Subject:** `Update on Your Application - {{job.title}}`
+
+**Body:**
+```json
+[
+  {
+    "type": "heading",
+    "content": "Application Update"
+  },
+  {
+    "type": "text",
+    "content": "Hi {{candidate.firstName}}, thank you for taking the time to interview for the {{job.title}} position."
+  },
+  {
+    "type": "text",
+    "content": "After careful consideration, we've decided to move forward with other candidates whose experience more closely aligns with our current needs."
+  },
+  {
+    "type": "text",
+    "content": "We were impressed by your skills and encourage you to apply for future openings that match your background."
+  },
+  {
+    "type": "divider"
+  },
+  {
+    "type": "text",
+    "content": "Best wishes in your job search,\n{{company.name}} Team"
+  }
+]
+```
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Configure Pipeline Stages" icon="diagram-project" href="/features/pipeline-stages">
+    Assign templates to stages for automated sending
+  </Card>
+  <Card title="Create Offers" icon="file-contract" href="/features/offers">
+    Use offer templates to generate job offers
+  </Card>
+  <Card title="Manage Candidates" icon="user-check" href="/features/candidate-tracking">
+    Send template-based emails to candidates
+  </Card>
+  <Card title="Set Up Assessments" icon="clipboard-check" href="/features/assessments">
+    Create assessment invitation templates
+  </Card>
+</CardGroup>

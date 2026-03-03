@@ -1,0 +1,351 @@
+---
+title: Creating Job Postings
+description: Step-by-step guide to create and configure job postings in OpenATS
+---
+
+This guide walks you through creating a new job posting, configuring all its settings, and publishing it to your careers page.
+
+## Creating a New Job
+
+<Steps>
+  <Step title="Navigate to Jobs">
+    From the dashboard, click on **Jobs** in the sidebar, then click the **Create New Job** button in the top right.
+  </Step>
+
+  <Step title="Enter Basic Information">
+    Fill in the essential job details:
+
+    ### Job Title
+    Enter a clear, descriptive job title.
+    ```text
+    Example: Senior Software Engineer - Backend
+    ```
+
+    ### Department
+    Select the department from the dropdown:
+    - Engineering
+    - API Management
+    - (Other departments configured in your system)
+
+    ### Employment Type
+    Choose the type of employment:
+    - **Full Time** - Regular full-time position
+    - **Part Time** - Part-time position
+    - **Contract** - Contract-based role
+    - **Internship** - Internship program
+    - **Freelance** - Freelance opportunity
+
+    <Note>
+    The employment type is displayed on your job listing and helps candidates filter opportunities.
+    </Note>
+  </Step>
+
+  <Step title="Add Skills">
+    Define the required skills for this position:
+
+    1. Type a skill name in the **Skills** field
+    2. Press **Enter** to add it
+    3. Repeat for each skill
+    4. Click the **X** icon on any skill badge to remove it
+
+    ```text
+    Example skills: Java EE, API DEV, Choreo, REST APIs, Docker
+    ```
+
+    <Tip>
+    Keep skill names consistent across jobs to help with filtering and reporting.
+    </Tip>
+  </Step>
+
+  <Step title="Set Location">
+    Enter the job location in the **Location** field:
+    ```text
+    Examples:
+    - Colombo, Sri Lanka
+    - Remote
+    - New York, NY (Hybrid)
+    - San Francisco, CA
+    ```
+  </Step>
+
+  <Step title="Write Job Description">
+    Use the rich text editor to compose your job description:
+
+    **Available formatting options:**
+    - **Bold**, *Italic*, Underline text
+    - Heading 1, Heading 2, Heading 3
+    - Bulleted lists
+    - Numbered lists
+
+    <Tip>
+    Include these sections in your description:
+    - Company overview
+    - Role responsibilities
+    - Required qualifications
+    - Preferred qualifications
+    - Benefits and perks
+    </Tip>
+  </Step>
+
+  <Step title="Configure Salary Information (Optional)">
+    Check **Include Salary Information** to add salary details:
+
+    ### Salary Type
+    Choose between:
+    - **Salary Range** - Specify minimum and maximum
+    - **Fixed Salary** - Single salary amount
+
+    ### Currency
+    Select from:
+    - USD (US Dollar)
+    - EUR (Euro)
+    - LKR (Sri Lankan Rupee)
+
+    ### Pay Frequency
+    Choose how often the salary is paid:
+    - **Hourly** - Per hour rate
+    - **Daily** - Per day rate
+    - **Weekly** - Per week rate
+    - **Monthly** - Per month rate
+    - **Yearly** - Annual salary
+
+    ### Salary Amounts
+    For **Salary Range**, enter:
+    - **Minimum Salary**: e.g., 50,000
+    - **Maximum Salary**: e.g., 80,000
+
+    For **Fixed Salary**, enter:
+    - **Enter Fixed Salary**: e.g., 75,000
+
+    <Note>
+    Salary information is displayed on the public job listing. Leave unchecked if you prefer not to disclose compensation.
+    </Note>
+  </Step>
+
+  <Step title="Set Job Status">
+    Use the **Make This Job Active** toggle in the top right to control visibility:
+
+    - **Active** (Green toggle) - Job is live and accepting applications
+    - **Inactive** (Gray toggle) - Job is saved as draft and not visible to candidates
+
+    <Tip>
+    Create jobs as inactive drafts first, then activate them once you've configured custom questions and the hiring pipeline.
+    </Tip>
+  </Step>
+
+  <Step title="Save the Job">
+    Click **Save Job** to create the job posting.
+
+    After saving, you'll be redirected to the job details page where you can:
+    - View the public job URL
+    - Configure custom application questions
+    - Set up the hiring pipeline
+    - Add hiring team members
+  </Step>
+</Steps>
+
+## After Creating a Job
+
+Once your job is created, you'll see:
+
+- **Job URL**: `openats.org/careers/{job-id}` - Share this link with candidates
+- **Candidate Count**: Number of applications received
+- **Job Status Badge**: Shows if the job is active
+- **Job Details**: Employment type, department, location, and salary range
+
+### Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Custom Questions" icon="message-question" href="/guides/custom-questions">
+    Add custom application form questions
+  </Card>
+  <Card title="Hiring Pipeline" icon="timeline" href="/guides/creating-jobs#hiring-pipeline">
+    Configure your hiring process stages
+  </Card>
+  <Card title="Hiring Team" icon="users" href="/guides/hiring-team">
+    Add team members to review candidates
+  </Card>
+  <Card title="Email Templates" icon="envelope" href="/guides/email-templates">
+    Set up automated email responses
+  </Card>
+</CardGroup>
+
+## Job Configuration Tabs
+
+After creating a job, use these tabs to fully configure it:
+
+### Overview Tab
+View and edit the job description, responsibilities, and requirements.
+
+### Hiring Team Tab
+Manage who can access and review candidates for this job. See the [Hiring Team guide](/guides/hiring-team) for details.
+
+### Hiring Process Tab
+Configure pipeline stages, automated offers, and rejection emails.
+
+<Steps>
+  <Step title="View Default Stages">
+    New jobs include these default stages:
+    - **Screening** - Initial application review
+    - **Applied** - Candidates who submitted applications
+    - **Interview** - Candidates in interview process
+    - **Offer** - Candidates receiving offers
+    - **Rejected** - Rejected candidates
+  </Step>
+
+  <Step title="Add Custom Stages">
+    Click **Add New Stage** to create additional pipeline stages:
+    1. Enter a stage name (e.g., "Technical Interview", "First Interview")
+    2. Click **Add Stage**
+
+    <Tip>
+    Keep stage names short and descriptive. Use consistent naming across jobs.
+    </Tip>
+  </Step>
+
+  <Step title="Reorder Stages">
+    Drag stages by the handle icon to reorder them. The order reflects your hiring process flow.
+  </Step>
+
+  <Step title="Configure Stage Automation">
+    Click the settings icon on any stage to configure:
+
+    #### Offer Stage Configuration
+    - **Select Offer Template**: Choose a template for offer letters
+    - **Mode**: 
+      - *Auto-Draft* - Creates draft offers for manual review
+      - *Auto-Send* - Automatically sends offers when candidates move to this stage
+    - **Expiry Days**: Number of days before offer expires
+
+    #### Rejection Stage Configuration
+    - **Select Rejection Email Template**: Choose a template for rejection emails
+    - Emails are automatically sent when candidates move to this stage
+
+    <Warning>
+    Auto-send modes immediately send emails to candidates. Use Auto-Draft for manual review first.
+    </Warning>
+  </Step>
+
+  <Step title="Delete Stages">
+    Click the delete icon to remove custom stages. Default stages cannot be deleted if they contain candidates.
+  </Step>
+</Steps>
+
+### Internal Notes
+Click **Internal Notes** to add private comments about the job visible only to your team.
+
+### Custom Questions Tab
+Add custom application form questions. See the [Custom Questions guide](/guides/custom-questions) for full details.
+
+## Editing Jobs
+
+To edit an existing job:
+
+1. Navigate to **Jobs** in the sidebar
+2. Click on the job title
+3. Modify any field
+4. Click **Save Changes**
+
+<Note>
+Changes to active jobs are immediately visible on the public careers page.
+</Note>
+
+## Job Statuses
+
+Jobs can have these statuses:
+
+- **Draft** - Not visible to candidates
+- **Inactive** - Saved but not accepting applications  
+- **Published** - Active and accepting applications
+- **Closed** - No longer accepting applications but viewable
+- **Archived** - Hidden from main job list
+
+## Best Practices
+
+<AccordionGroup>
+  <Accordion title="Write Clear Job Titles">
+    Use standard industry titles that candidates search for:
+    - ✅ "Senior Software Engineer - Backend"
+    - ✅ "Product Marketing Manager"
+    - ❌ "Coding Ninja Wanted!"
+    - ❌ "Rockstar Developer"
+  </Accordion>
+
+  <Accordion title="Be Transparent About Compensation">
+    Including salary information increases application quality:
+    - Attracts candidates within your budget
+    - Reduces time spent on mismatched expectations
+    - Demonstrates transparency and builds trust
+  </Accordion>
+
+  <Accordion title="Structure Your Job Description">
+    Use headings and lists for better readability:
+    ```markdown
+    ## About [Company Name]
+    Brief company overview...
+
+    ## The Role
+    What the candidate will do...
+
+    ## Responsibilities
+    - Responsibility 1
+    - Responsibility 2
+
+    ## Requirements
+    - Required skill 1
+    - Required skill 2
+
+    ## Nice to Have
+    - Preferred skill 1
+
+    ## Benefits
+    - Benefit 1
+    - Benefit 2
+    ```
+  </Accordion>
+
+  <Accordion title="Set Up Your Pipeline Before Publishing">
+    Configure your hiring process stages and automations before making the job active:
+    1. Add all necessary pipeline stages
+    2. Configure offer and rejection email templates
+    3. Add hiring team members
+    4. Create custom application questions
+    5. Test the application flow
+    6. Activate the job
+  </Accordion>
+</AccordionGroup>
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="Cannot Delete a Job">
+    Jobs with candidates cannot be deleted to preserve application history. Instead:
+    - Close the job to stop accepting applications
+    - Archive it to hide from the main jobs list
+  </Accordion>
+
+  <Accordion title="Salary Validation Errors">
+    If you see salary validation errors:
+    - Ensure maximum salary is greater than minimum salary
+    - Both currency and pay frequency must be selected when including salary
+    - For fixed salary, ensure the amount is entered
+    - For salary range, ensure both min and max are entered
+  </Accordion>
+
+  <Accordion title="Job Not Appearing on Careers Page">
+    Check these settings:
+    - Job status is set to **Active** (green toggle)
+    - Job status in database is "published" not "draft"
+    - Clear your browser cache
+  </Accordion>
+</AccordionGroup>
+
+## API Reference
+
+For programmatic job creation, see the [Job API endpoints](/api-reference/jobs).
+
+**Key endpoints:**
+- `POST /api/jobs` - Create a new job
+- `GET /api/jobs/{id}` - Get job details  
+- `PUT /api/jobs/{id}` - Update a job
+- `DELETE /api/jobs/{id}` - Delete a job

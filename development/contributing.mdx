@@ -1,0 +1,393 @@
+---
+title: 'Contributing Guidelines'
+description: 'How to contribute to OpenATS development'
+---
+
+## Getting Started
+
+Thank you for your interest in contributing to OpenATS! This guide will help you understand our development workflow and best practices.
+
+<Note>
+Before contributing, make sure you've completed the [Local Development Setup](/development/setup).
+</Note>
+
+## Important Rules
+
+<Warning>
+- **NEVER** push directly to main
+- **ALWAYS** pull from upstream before starting work
+- Create a **NEW** branch for each task
+- Keep commits small and focused
+- Test your code before pushing
+- If you modify the database schema, always run `pnpm drizzle-kit generate` and commit the generated migration files
+</Warning>
+
+## Git Workflow
+
+### Before Starting Any Work
+
+Always sync with the upstream repository first:
+
+```bash
+git checkout main
+git pull upstream main
+git push origin main
+```
+
+This ensures your local main branch and your fork are up to date with the main repository.
+
+### Creating a New Branch
+
+Use descriptive branch names that follow these conventions:
+
+**For new features:**
+```bash
+git checkout -b feature/task-name
+```
+
+Examples:
+- `feature/candidate-filtering`
+- `feature/email-templates`
+- `feature/assessment-builder`
+
+**For bug fixes:**
+```bash
+git checkout -b fix/bug-name
+```
+
+Examples:
+- `fix/login-redirect`
+- `fix/job-posting-validation`
+- `fix/assessment-scoring`
+
+**For documentation:**
+```bash
+git checkout -b docs/description
+```
+
+Example:
+- `docs/api-endpoints`
+- `docs/setup-guide`
+
+## Making Changes
+
+### 1. Work on Your Code
+
+Make your changes in focused, logical commits. Each commit should represent a single, complete change.
+
+### 2. Test Your Changes
+
+**Frontend testing:**
+```bash
+cd web
+pnpm dev
+```
+
+Verify your changes at [http://localhost:3000](http://localhost:3000)
+
+**Backend testing:**
+```bash
+cd api
+pnpm dev
+```
+
+Verify the API at [http://localhost:5000](http://localhost:5000)
+
+### 3. Database Schema Changes
+
+If you modified any schema files in `api/src/db/schema/`:
+
+```bash
+cd api
+pnpm drizzle-kit generate  # Generate migration files
+pnpm drizzle-kit migrate   # Apply migrations locally
+```
+
+<Warning>
+Always commit the generated migration files in `api/drizzle/` along with your schema changes!
+</Warning>
+
+## Committing Changes
+
+### Commit Message Format
+
+Use clear, descriptive commit messages:
+
+```bash
+git add .
+git commit -m "brief description of what you did"
+```
+
+**Good commit messages:**
+- `Add candidate filtering by skills`
+- `Fix job posting validation error`
+- `Update assessment scoring logic`
+- `Refactor authentication middleware`
+
+**Bad commit messages:**
+- `update`
+- `fix bug`
+- `changes`
+- `wip`
+
+### Commit Best Practices
+
+1. **Keep commits atomic** - One logical change per commit
+2. **Write descriptive messages** - Explain what and why, not how
+3. **Test before committing** - Ensure your code works
+4. **Don't commit secrets** - Never commit `.env` files or API keys
+5. **Include migration files** - Always commit generated Drizzle migrations
+
+## Pushing Your Changes
+
+Push your branch to your fork:
+
+```bash
+git push origin feature/task-name
+```
+
+If you need to update your branch after making more commits:
+
+```bash
+git push origin feature/task-name
+```
+
+## Creating a Pull Request
+
+### 1. Go to GitHub
+
+Navigate to the [OpenATS repository](https://github.com/chamals3n4/OpenATS) on GitHub.
+
+### 2. Create PR from Your Branch
+
+GitHub will usually show a prompt to create a PR from your recently pushed branch. Click "Compare & pull request".
+
+### 3. Fill Out PR Template
+
+Provide a clear description of your changes:
+
+**Title:** Use a clear, concise title
+- `Add candidate skill filtering feature`
+- `Fix assessment scoring bug`
+
+**Description:** Include:
+- What changes you made
+- Why you made them
+- How to test the changes
+- Screenshots (if UI changes)
+- Related issue numbers (if applicable)
+
+**Example PR description:**
+
+```markdown
+## Summary
+Adds filtering functionality to the candidates page, allowing users to filter by skills.
+
+## Changes
+- Added skill filter component to candidates page
+- Updated API endpoint to support skill filtering
+- Added database query optimization for skill lookups
+
+## Testing
+1. Navigate to candidates page
+2. Select skills from the filter dropdown
+3. Verify candidates are filtered correctly
+
+## Screenshots
+[Attach screenshots here]
+
+## Related Issues
+Closes #123
+```
+
+### 4. Request Review
+
+Wait for maintainers to review your PR. They may:
+- Approve and merge it
+- Request changes
+- Ask questions for clarification
+
+### 5. Address Feedback
+
+If changes are requested:
+
+```bash
+# Make the requested changes
+git add .
+git commit -m "Address PR feedback: update validation logic"
+git push origin feature/task-name
+```
+
+The PR will automatically update with your new commits.
+
+## Code Style Guidelines
+
+### TypeScript
+
+- Use TypeScript for all new code
+- Leverage type safety - avoid `any` types
+- Use interfaces for object shapes
+- Export types from schema files
+
+### Frontend (Next.js)
+
+- Use functional components with hooks
+- Follow the existing component structure
+- Use Tailwind CSS for styling
+- Use shadcn/ui components when available
+
+### Backend (Express)
+
+- Use async/await for asynchronous operations
+- Implement proper error handling
+- Validate input with Zod schemas
+- Use Drizzle ORM for database operations
+
+### File Organization
+
+```
+api/
+├── src/
+│   ├── db/
+│   │   └── schema/      # Database schemas
+│   ├── routes/          # API routes
+│   ├── middleware/      # Express middleware
+│   └── server.ts        # Entry point
+├── drizzle/             # Migration files (auto-generated)
+└── package.json
+
+web/
+├── app/                 # Next.js app directory
+├── components/          # React components
+├── lib/                 # Utilities
+└── package.json
+```
+
+## Database Migrations
+
+When working with database schema changes:
+
+### 1. Modify Schema Files
+
+Edit files in `api/src/db/schema/`:
+
+```typescript
+// api/src/db/schema/jobs.ts
+export const jobs = pgTable("jobs", {
+  // Add new column
+  isRemote: boolean("is_remote").default(false),
+});
+```
+
+### 2. Generate Migration
+
+```bash
+cd api
+pnpm drizzle-kit generate
+```
+
+This creates a new migration file in `api/drizzle/`.
+
+### 3. Apply Migration Locally
+
+```bash
+pnpm drizzle-kit migrate
+```
+
+Test that the migration works correctly.
+
+### 4. Commit Both Schema and Migration
+
+```bash
+git add src/db/schema/jobs.ts
+git add drizzle/0004_new_migration.sql
+git add drizzle/meta/
+git commit -m "Add isRemote field to jobs table"
+```
+
+## Common Tasks
+
+### Syncing Your Fork
+
+```bash
+git checkout main
+git pull upstream main
+git push origin main
+```
+
+### Rebasing Your Branch
+
+If main has moved ahead while you were working:
+
+```bash
+git checkout main
+git pull upstream main
+git checkout feature/your-branch
+git rebase main
+```
+
+Resolve any conflicts, then:
+
+```bash
+git push origin feature/your-branch --force-with-lease
+```
+
+### Stashing Changes
+
+If you need to switch branches with uncommitted changes:
+
+```bash
+git stash
+git checkout other-branch
+# Do work...
+git checkout original-branch
+git stash pop
+```
+
+## Getting Help
+
+- **Discord**: Join our community Discord server
+- **GitHub Issues**: Ask questions in issue comments
+- **Discussions**: Use GitHub Discussions for general questions
+
+## Code Review Process
+
+### What Reviewers Look For
+
+1. **Code Quality**
+   - Clean, readable code
+   - Proper error handling
+   - Type safety
+
+2. **Testing**
+   - Code has been tested locally
+   - Edge cases are handled
+
+3. **Documentation**
+   - Code comments for complex logic
+   - Updated docs if needed
+
+4. **Best Practices**
+   - Follows project conventions
+   - No security vulnerabilities
+   - Database migrations included (if applicable)
+
+### Timeline
+
+- Initial review: Usually within 2-3 days
+- Follow-up reviews: 1-2 days after updates
+- Merge: After approval from maintainers
+
+## License
+
+By contributing to OpenATS, you agree that your contributions will be licensed under the same license as the project.
+
+## Recognition
+
+All contributors will be recognized in the project README and release notes. Thank you for helping make OpenATS better!
+
+## Next Steps
+
+- Check [open issues](https://github.com/chamals3n4/OpenATS/issues) for tasks to work on
+- Look for issues labeled `good first issue` if you're new
+- Join our community channels to connect with other contributors

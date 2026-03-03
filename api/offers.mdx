@@ -1,0 +1,413 @@
+---
+title: Offers
+description: Offer generation and management endpoints for creating, tracking, and managing candidate offers
+---
+
+## Overview
+
+The Offers API handles the complete lifecycle of candidate job offers, from initial creation through acceptance or decline. Offers can be generated from templates, customized per candidate, and tracked through various status transitions.
+
+**Offer Status Flow:**
+```
+draft → sent → pending → accepted/declined/withdrawn
+```
+
+---
+
+## Create Offer
+
+Generate a new offer for a candidate. The offer can optionally use a template and will inherit salary details from the job if not specified.
+
+```bash POST /offers
+curl -X POST http://localhost:8080/api/offers \
+  -H "Content-Type: application/json" \
+  -d '{
+    "candidateId": 42,
+    "jobId": 5,
+    "templateId": 1,
+    "salary": 150000,
+    "currency": "USD",
+    "payFrequency": "yearly",
+    "startDate": "2024-04-15",
+    "expiryDate": "2024-04-01",
+    "createdBy": 1
+  }'
+```
+
+**Request Body:**
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `candidateId` | integer | Yes | ID of the candidate receiving the offer |
+| `jobId` | integer | Yes | ID of the job position |
+| `templateId` | integer | No | Template to use for offer letter (null for no template) |
+| `salary` | number | No | Offer salary amount (inherits from job if not specified) |
+| `currency` | string | No | 3-letter currency code (e.g., "USD", "EUR", "GBP") |
+| `payFrequency` | enum | No | Payment frequency: `hourly`, `daily`, `weekly`, `monthly`, `yearly` |
+| `startDate` | string | No | Proposed employment start date (ISO 8601 format: YYYY-MM-DD) |
+| `expiryDate` | string | No | Offer expiration date (ISO 8601 format: YYYY-MM-DD) |
+| `createdBy` | integer | No | User ID of offer creator (defaults to 1) |
+
+**Response:**
+
+```json
+{
+  "data": {
+    "id": 12,
+    "candidateId": 42,
+    "jobId": 5,
+    "templateId": 1,
+    "salary": 150000,
+    "currency": "USD",
+    "payFrequency": "yearly",
+    "startDate": "2024-04-15",
+    "expiryDate": "2024-04-01",
+    "status": "draft",
+    "renderedHtml": null,
+    "createdBy": 1,
+    "createdAt": "2024-03-15T10:30:00Z",
+    "updatedAt": "2024-03-15T10:30:00Z"
+  }
+}
+```
+
+---
+
+## List Offers by Job
+
+Retrieve all offers associated with a specific job opening.
+
+```bash GET /offers/job/:jobId
+curl -X GET http://localhost:8080/api/offers/job/5 \
+  -H "Content-Type: application/json"
+```
+
+**Path Parameters:**
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `jobId` | integer | Yes | Job opening ID |
+
+**Response:**
+
+```json
+{
+  "data": [
+    {
+      "id": 12,
+      "candidateId": 42,
+      "candidateName": "John Doe",
+      "jobId": 5,
+      "jobTitle": "Senior Backend Engineer",
+      "salary": 150000,
+      "currency": "USD",
+      "payFrequency": "yearly",
+      "status": "sent",
+      "createdAt": "2024-03-15T10:30:00Z",
+      "expiryDate": "2024-04-01"
+    },
+    {
+      "id": 11,
+      "candidateId": 38,
+      "candidateName": "Jane Smith",
+      "jobId": 5,
+      "jobTitle": "Senior Backend Engineer",
+      "salary": 145000,
+      "currency": "USD",
+      "payFrequency": "yearly",
+      "status": "accepted",
+      "createdAt": "2024-03-10T14:20:00Z",
+      "expiryDate": "2024-03-25"
+    }
+  ]
+}
+```
+
+---
+
+## Get Offer by ID
+
+Retrieve full details for a specific offer, including rendered HTML if available.
+
+```bash GET /offers/:id
+curl -X GET http://localhost:8080/api/offers/12 \
+  -H "Content-Type: application/json"
+```
+
+**Path Parameters:**
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `id` | integer | Yes | Offer ID |
+
+**Response:**
+
+```json
+{
+  "data": {
+    "id": 12,
+    "candidateId": 42,
+    "candidate": {
+      "id": 42,
+      "firstName": "John",
+      "lastName": "Doe",
+      "email": "john.doe@example.com",
+      "phone": "+1 555 123 4567"
+    },
+    "jobId": 5,
+    "job": {
+      "id": 5,
+      "title": "Senior Backend Engineer",
+      "department": "Engineering",
+      "location": "San Francisco, CA (Remote)"
+    },
+    "templateId": 1,
+    "template": {
+      "id": 1,
+      "name": "Standard Engineering Offer",
+      "type": "offer"
+    },
+    "salary": 150000,
+    "currency": "USD",
+    "payFrequency": "yearly",
+    "startDate": "2024-04-15",
+    "expiryDate": "2024-04-01",
+    "status": "sent",
+    "renderedHtml": "<div class='offer-letter'>...</div>",
+    "createdBy": 1,
+    "createdAt": "2024-03-15T10:30:00Z",
+    "updatedAt": "2024-03-15T11:00:00Z",
+    "sentAt": "2024-03-15T11:00:00Z"
+  }
+}
+```
+
+---
+
+## Update Offer
+
+Modify offer details such as salary, dates, or template. Cannot update offers that have been accepted.
+
+```bash PUT /offers/:id
+curl -X PUT http://localhost:8080/api/offers/12 \
+  -H "Content-Type: application/json" \
+  -d '{
+    "salary": 155000,
+    "startDate": "2024-04-22",
+    "expiryDate": "2024-04-08"
+  }'
+```
+
+**Path Parameters:**
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `id` | integer | Yes | Offer ID |
+
+**Request Body:**
+
+All fields are optional. Only include fields you want to update.
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `templateId` | integer | Template ID (null to remove template) |
+| `salary` | number | Offer salary amount |
+| `currency` | string | 3-letter currency code |
+| `payFrequency` | enum | Payment frequency: `hourly`, `daily`, `weekly`, `monthly`, `yearly` |
+| `startDate` | string | Employment start date (YYYY-MM-DD) |
+| `expiryDate` | string | Offer expiration date (YYYY-MM-DD) |
+| `status` | enum | Offer status: `draft`, `sent`, `pending`, `accepted`, `declined`, `withdrawn` |
+| `renderedHtml` | string | Manually set rendered HTML (overrides template rendering) |
+
+**Response:**
+
+```json
+{
+  "data": {
+    "id": 12,
+    "candidateId": 42,
+    "jobId": 5,
+    "templateId": 1,
+    "salary": 155000,
+    "currency": "USD",
+    "payFrequency": "yearly",
+    "startDate": "2024-04-22",
+    "expiryDate": "2024-04-08",
+    "status": "sent",
+    "renderedHtml": "<div class='offer-letter'>...</div>",
+    "createdBy": 1,
+    "createdAt": "2024-03-15T10:30:00Z",
+    "updatedAt": "2024-03-16T09:15:00Z",
+    "sentAt": "2024-03-15T11:00:00Z"
+  }
+}
+```
+
+---
+
+## Update Offer Status
+
+Transition an offer through its lifecycle states. This is the preferred method for status changes.
+
+```bash PATCH /offers/:id/status
+curl -X PATCH http://localhost:8080/api/offers/12/status \
+  -H "Content-Type: application/json" \
+  -d '{
+    "status": "accepted"
+  }'
+```
+
+**Path Parameters:**
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `id` | integer | Yes | Offer ID |
+
+**Request Body:**
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `status` | enum | Yes | New status: `draft`, `sent`, `pending`, `accepted`, `declined`, `withdrawn` |
+
+**Status Definitions:**
+
+| Status | Description |
+|--------|-------------|
+| `draft` | Offer is being prepared, not yet sent to candidate |
+| `sent` | Offer has been sent to candidate |
+| `pending` | Candidate is reviewing the offer |
+| `accepted` | Candidate has accepted the offer |
+| `declined` | Candidate has declined the offer |
+| `withdrawn` | Company has withdrawn the offer |
+
+**Response:**
+
+```json
+{
+  "data": {
+    "id": 12,
+    "candidateId": 42,
+    "jobId": 5,
+    "status": "accepted",
+    "updatedAt": "2024-03-16T14:30:00Z",
+    "acceptedAt": "2024-03-16T14:30:00Z"
+  }
+}
+```
+
+---
+
+## Delete Offer
+
+Void and permanently delete an offer. This action cannot be undone.
+
+```bash DELETE /offers/:id
+curl -X DELETE http://localhost:8080/api/offers/12 \
+  -H "Content-Type: application/json"
+```
+
+**Path Parameters:**
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `id` | integer | Yes | Offer ID |
+
+**Response:**
+
+```json
+{
+  "data": {
+    "id": 12,
+    "candidateId": 42,
+    "jobId": 5,
+    "status": "withdrawn",
+    "deletedAt": "2024-03-16T15:00:00Z"
+  }
+}
+```
+
+---
+
+## Complete Offer Flow Example
+
+Here's a typical workflow for creating and managing an offer:
+
+<Steps>
+  <Step title="Create Draft Offer">
+    ```bash
+    curl -X POST http://localhost:8080/api/offers \
+      -H "Content-Type: application/json" \
+      -d '{
+        "candidateId": 42,
+        "jobId": 5,
+        "templateId": 1,
+        "salary": 150000,
+        "currency": "USD",
+        "payFrequency": "yearly",
+        "startDate": "2024-04-15",
+        "expiryDate": "2024-04-01"
+      }'
+    ```
+  </Step>
+  
+  <Step title="Review and Update if Needed">
+    ```bash
+    curl -X PUT http://localhost:8080/api/offers/12 \
+      -H "Content-Type: application/json" \
+      -d '{
+        "salary": 155000
+      }'
+    ```
+  </Step>
+  
+  <Step title="Send to Candidate">
+    ```bash
+    curl -X PATCH http://localhost:8080/api/offers/12/status \
+      -H "Content-Type: application/json" \
+      -d '{"status": "sent"}'
+    ```
+  </Step>
+  
+  <Step title="Track Candidate Decision">
+    ```bash
+    # Candidate accepts
+    curl -X PATCH http://localhost:8080/api/offers/12/status \
+      -H "Content-Type: application/json" \
+      -d '{"status": "accepted"}'
+    
+    # Or candidate declines
+    curl -X PATCH http://localhost:8080/api/offers/12/status \
+      -H "Content-Type: application/json" \
+      -d '{"status": "declined"}'
+    ```
+  </Step>
+</Steps>
+
+---
+
+## Error Responses
+
+**Validation Error (400):**
+```json
+{
+  "error": "Validation failed",
+  "details": {
+    "salary": ["Expected number, received string"],
+    "currency": ["String must contain exactly 3 character(s)"]
+  }
+}
+```
+
+**Not Found (404):**
+```json
+{
+  "error": "Offer not found"
+}
+```
+
+**Constraint Error (400):**
+```json
+{
+  "error": "Cannot update accepted offer"
+}
+```
