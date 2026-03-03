@@ -1,0 +1,132 @@
+{
+  "projectType": "saas",
+  "projectName": "OpenATS",
+  "projectDescription": "Open source applicant tracking system for managing recruitment workflows, candidate pipelines, and hiring teams.",
+  "theme": "palm",
+  "primaryColor": "#2563eb",
+  "lightColor": "#60a5fa",
+  "darkColor": "#1e40af",
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Documentation",
+        "groups": [
+          {
+            "group": "Get Started",
+            "pages": [
+              "introduction",
+              "quickstart",
+              "architecture"
+            ]
+          },
+          {
+            "group": "Core Features",
+            "pages": [
+              "features/job-management",
+              "features/candidate-tracking",
+              "features/pipeline-stages",
+              "features/assessments",
+              "features/offers",
+              "features/templates"
+            ]
+          },
+          {
+            "group": "User Guides",
+            "pages": [
+              "guides/creating-jobs",
+              "guides/managing-candidates",
+              "guides/hiring-team",
+              "guides/custom-questions",
+              "guides/email-templates"
+            ]
+          },
+          {
+            "group": "Development",
+            "pages": [
+              "development/setup",
+              "development/database",
+              "development/contributing"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "API Reference",
+        "groups": [
+          {
+            "group": "Getting Started",
+            "pages": [
+              "api/overview",
+              "api/authentication"
+            ]
+          },
+          {
+            "group": "Core Endpoints",
+            "pages": [
+              "api/company",
+              "api/users",
+              "api/jobs",
+              "api/candidates"
+            ]
+          },
+          {
+            "group": "Recruitment Features",
+            "pages": [
+              "api/pipelines",
+              "api/hiring-team",
+              "api/custom-questions",
+              "api/assessments",
+              "api/assessment-execution"
+            ]
+          },
+          {
+            "group": "Communication",
+            "pages": [
+              "api/templates",
+              "api/offers",
+              "api/chat"
+            ]
+          },
+          {
+            "group": "Utilities",
+            "pages": [
+              "api/storage"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "keyFeatures": [
+    "Complete applicant tracking system with job posting and candidate management",
+    "Customizable recruitment pipelines with multiple stages and drag-and-drop interface",
+    "Technical assessment creation and execution with automatic grading",
+    "Template-based offer letter generation with dynamic variables",
+    "Real-time collaboration with team chat and Socket.IO integration",
+    "Email automation using Resend for candidate communications",
+    "Resume and document storage with AWS S3/R2 integration",
+    "Role-based access control for hiring team members",
+    "Custom application form questions per job posting",
+    "Department and user management for recruitment teams"
+  ],
+  "publicApiSurface": [
+    "POST /api/jobs - Create job posting",
+    "GET /api/jobs - List all jobs",
+    "GET /api/jobs/:id - Get job details",
+    "POST /api/candidates/apply - Submit job application",
+    "GET /api/candidates - List candidates",
+    "PUT /api/candidates/:id/stage - Move candidate through pipeline",
+    "POST /api/assessments - Create technical assessment",
+    "POST /api/assessment-execution/invite - Invite candidate to assessment",
+    "POST /api/assessment-execution/start - Start assessment attempt",
+    "POST /api/assessment-execution/submit - Submit assessment answer",
+    "POST /api/offers - Generate offer letter",
+    "PUT /api/offers/:id - Update offer status",
+    "GET /api/templates - List email/document templates",
+    "POST /api/company/departments - Create department",
+    "GET /api/users - List team members",
+    "POST /api/chat/job/:jobId - Send team message",
+    "POST /api/upload/resume - Upload candidate resume",
+    "GET /api/pipelines/:jobId - Get job pipeline stages"
+  ]
+}
